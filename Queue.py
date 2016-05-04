@@ -97,7 +97,7 @@ class CapacityQueueMonitor(QueueMonitor):
         if child_queues is None:
             ##we find the leaf queue and update queue
             name = root_queue["queueName"]
-            print "queue name",name
+            print "queue ",name," update"
             self.update_queue(name,root_queue) 
         ##we traverse its children
         else:
