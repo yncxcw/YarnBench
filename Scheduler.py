@@ -27,21 +27,29 @@ class SchedulerPlan:
         self.queueMonitor.monitor_queue()
 
 
-        slef.generatos = []
+        self.generatos = []
         ##try to make generator
-        generator_types = self.conf.get("generators")
+        generator_types_t = self.conf.get("generators")
 
-        if generator_types is None:
+        if generator_types_t is None:
             raise Exception("missing generators")
+        else:
+            generator_types = list(generator_types_t)
 
+        print len(generator_types)
         ##TODO reflection
         for generator_type in generator_types:
+            print generator_type
             if generator_type == "OrderGenerator":
-                generator = OrderGenerator(self.conf,self.queueMonitor) 
+                generator = OrderGenerator(self.conf,self.queueMonitor)
+                ##TODO log
+                print "generator: OderGenerator" 
             elif generator_type == "PoissonGenerator":
                 generator = PoissonGenerator(self.conf,self.queueMonitor)
+                print "generator: PoissonGenerator"
             elif generator_type == "CapacityGenerator":
                 generator = CapacityGenerator(self.conf,self.queueMonitor)
+                print "generator: CapacityGenerator"
             else:
                 raise Exception("unknown generator")
             generatos.append(generator)
