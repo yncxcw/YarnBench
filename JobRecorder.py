@@ -4,7 +4,9 @@ import os
 import subprocess
 import time
 import random
+import threading
 import ConfUtils
+
 
 from RunHadoop import RunHadoop 
 
@@ -18,11 +20,39 @@ START    ="startedTime"
 ELAPSE   ="elapsedTime"
 
 
+job_id = 0
+
+lock = threading.Lock()
+
+def refresh_job_id(conf):
+
+    global job_id
+    _url_ = conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps"
+    dict_read=ConfUtils.read_json_url(_url_)
+    value = 0 
+    if dict_read["apps"] is None:
+        value = 0
+    else:
+        for app in dict_read["apps"]["app"]:
+            if int(app["id"].split("_")[-1]) > value:
+                value = int(app["id"].split("_")[-1])
+
+    with lock:
+        job_id = value
+    print "initial job id",job_id
+
+
+def inc_get_id():
+    global job_id
+    with lock:
+        job_id = job_id +1
+
+    print "current job id",job_id
+    return job_id
+
+    
 class JobRecorder:
 
-    JOB_SERVER="http://localhost:8088/ws/v1/cluster/apps"
-    JOB_USER  =""
-    JOB_HOME  =""
     JOB_JOB_HISTORY=""
     JOB_JOB_HISTORY_ENDING=""
     JOB_BIN   =""
@@ -30,7 +60,9 @@ class JobRecorder:
     
 
 
-    def __init__(self,job_home,job_user):
+    def __init__(self,job_home,job_user,conf):
+        self.conf           =conf
+        self.JOB_SERVER     =self.conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps"
         self.JOB_USER       =job_user
         self.JOB_HOME       =job_home
 
@@ -68,7 +100,8 @@ class JobRecorder:
 
     ##get job id if it's accepted by RM and mark the job "started" 
     def wait_job_start(self):
-        query_url=self.JOB_SERVER+"?states=accepted,running"
+        id = inc_get_id()
+        query_url=self.JOB_SERVER
         ##sleep here untill the app is submited to RM
         time.sleep(10)
         dict_read=ConfUtils.read_json_url(query_url)
@@ -83,15 +116,21 @@ class JobRecorder:
         final_app = None
         ##unit is s
         minimum   = 1000
-        print "find job here"
-        for app in dict_read["apps"]["app"]:
-            if app["applicationType"]==self.get_type():
-                if int(app[START])/1000 - self.job_submit_time < minimum:
+        ##wait untill we get the job with job_id = id
+        print "waiting for submit",id
+        while True:
+            found = False
+            dict_read=ConfUtils.read_json_url(query_url)
+            for app in dict_read["apps"]["app"]:
+                if int(app["id"].split("_")[-1]) == id: 
                     final_app = app
-                    minimum   =  int(app[START])/1000 - self.job_submit_time
+                    found = True
+                    break
+            if found is True:
+                break
                
         self.job_id=final_app["id"]
-        print "start",final_app[START]
+        print "start",self.job_id
         self.job_start_time=final_app[START]
         self.job_queue = final_app["queue"] 
         self.job_app_server=self.JOB_SERVER+"/"+self.job_id
@@ -104,7 +143,6 @@ class JobRecorder:
             return
         dict_read=ConfUtils.read_json_url(self.job_app_server)["app"]
         elapse_time = int(dict_read[ELAPSE])
-        print self.job_id,"  ",dict_read[STATE]
         if self.job_propertys.get(PROGRESS) is None:
             self.job_propertys[PROGRESS] = {}
         self.job_propertys[PROGRESS][elapse_time]=float(dict_read[PROGRESS])
@@ -156,15 +194,13 @@ class JobRecorder:
         final_run_list = []
         for run in run_list:
             if run is None:
-                final_run_list.append("")
+                continue
             else:
                 final_run_list.append(run)
-        print final_run_list
-        print len(final_run_list)
         FNULL=open(os.devnull,'w')
         subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
+        print final_run_list
         self.job_submit_time=time.time()
-        print self.job_submit_time 
         while self.finish is False:
             if self.start is False:
                 ##if we get job id, then we mark it "started"
@@ -173,7 +209,8 @@ class JobRecorder:
                 self.monitor_job()
                 time.sleep(2)
                 continue;
-        RunHadoop.HDFSDeletePath(self.job_output)
+        print "finish",self.job_id
+        #RunHadoop.HDFSDeletePath(self.job_output)
 
     def copy_job_history(self):
         ##get job history lits by hdfs ls
@@ -212,8 +249,8 @@ class JobRecorder:
 	
 class HadoopJobRecorder(JobRecorder):
 
-    def __init__(self, job_home,job_user,job_jar,job_exe,job_input=None,job_output=None):
-        JobRecorder.__init__(self,job_home,job_user)
+    def __init__(self, conf,job_home,job_user,job_jar,job_exe,job_input=None,job_output=None):
+        JobRecorder.__init__(self,job_home,job_user,conf)
         self.jar                   =job_jar
         self.exe                   =job_exe
         self.job_command           ="jar"
@@ -230,8 +267,8 @@ class HadoopJobRecorder(JobRecorder):
     
 class SparkJobRecorder(JobRecorder):
 
-    def __init__(self, job_home,job_user,job_jar,job_exe,job_input=None,job_output=None):
-        JobRecorder.__init__(self,job_home,job_user)
+    def __init__(self, conf,job_home,job_user,job_jar,job_exe,job_input=None,job_output=None):
+        JobRecorder.__init__(self,job_home,job_user,conf)
         self.jar            =job_jar
         self.exe            =job_exe
         self.job_input      =job_input
@@ -245,8 +282,8 @@ class SparkJobRecorder(JobRecorder):
 
 class SparkSQLJobRecorder(JobRecorder):
 
-    def __init__(self, job_home,job_user):
-        JobRecorder.__init__(self,job_home,job_user)
+    def __init__(self, conf, job_home,job_user):
+        JobRecorder.__init__(self,job_home,job_user,conf)
         self.JOB_BIN         = self.JOB_HOME+"/bin/spark-sql"
         self.JOB_JOB_HISTORY = "/spark/spark-events"+self.JOB_USER
         pass 
@@ -256,14 +293,17 @@ class SparkSQLJobRecorder(JobRecorder):
 
 class HiBenchJobRecorder(JobRecorder):
 
-    def __init__(self,job_home,job_user,job_type,job_exe):
-        JobRecorder.__init__(self,job_home,job_user)
+    def __init__(self,conf,job_home,job_user,job_type,job_exe):
+        JobRecorder.__init__(self,job_home,job_user,conf)
         assert(job_type=="spark" or job_type=="mapreduce")
         self.job_type = job_type
         if job_type == "mapreduce":
             self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"bin/run.sh"
         else:
             self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"java/bin/run.sh"
+
+        ##random generate output dic
+        self.job_output = "/output_"+job_exe+"_"+job_type+"_"+str(random.randint(1,1000)) 
 
     def get_type(self):
         if self.job_type == "spark":
@@ -399,7 +439,8 @@ class HadoopMakeJob(MakeJob):
                                 job_jar  = jar          ,
                                 job_exe  = name         ,
                                 job_input= inputs       ,
-                                job_output=output
+                                job_output=output       ,
+                                conf      =self.conf
                                 )
         self.add_parameters(name,job)
         self.add_keyvalues(name,job)
@@ -431,7 +472,8 @@ class SparkMakeJob(MakeJob):
                                 job_jar  = jar          ,
                                 job_exe  = name         ,
                                 job_input= inputs       ,
-                                job_output=output
+                                job_output=output       ,
+                                conf      =self.conf
                                 )
         self.add_parameters(name,job)
         self.add_keyvalues(name,job)
@@ -451,7 +493,8 @@ class SparkSQLMakeJob(MakeJob):
         name  = self.jobs[index] 
         job = SparkSQLJobRecorder(
                                  job_home = self.job_home,
-                                 job_user = self.job_user
+                                 job_user = self.job_user,
+                                 conf     = self.conf
                                  )
 
         self.add_keyvalues(name,job)
@@ -485,7 +528,9 @@ class HiBenchMakeJob(MakeJob):
                                   job_home = self.job_home,
                                   job_user = self.job_user,
                                   job_type = self.job_types[index],
-                                  job_exe  = name                                                                  )
+                                  job_exe  = name,
+                                  conf     = self.conf
+                                  )
 
         ##we do not have parameters and keyvalues here
         return job

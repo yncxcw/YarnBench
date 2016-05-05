@@ -3,6 +3,7 @@ import ConfUtils
 import Queue
 import Generator
 import time
+import JobRecorder
 
 class SchedulerPlan:
 
@@ -56,8 +57,8 @@ class SchedulerPlan:
             self.generators.append(generator)
 
         ##get run time
-        self.run_time = self.conf.get("runtime")
-        assert(self.run_time > 100) 
+        self.run_time = int(self.conf.get("runtime")[0])
+        #assert(self.run_time > 100) 
 
         ##whole job set
         self.jobs = []            
@@ -66,6 +67,8 @@ class SchedulerPlan:
     def run(self):
 
         print "start"
+        ##inital job id
+        JobRecorder.refresh_job_id(self.conf)
         ##main loop
         while self.run_time > 0:
             for generator in self.generators:
@@ -76,6 +79,19 @@ class SchedulerPlan:
                 else:
                     self.jobs += new_jobs 
             time.sleep(1)
+            self.run_time = self.run_time - 1
+        print "submit finished"
+        while True:
+            for generator in self.generators:
+                finish = True
+                if generator.is_finished() is False:
+                    finish = False
+            if finish is True:
+                break
+
+        print "finish"
+        
+            
                  
         
          

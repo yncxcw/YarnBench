@@ -13,9 +13,10 @@ class Generator:
     ##a generator can only submit job one queue
     def __init__(self,conf,queueMonitor):
         self.conf           = conf
-        self.queue          = conf.get(self.PREFIX_NAME+".queue")[0]
-        if self.queue is None:
+        if conf.get(self.PREFIX_NAME+".queue") is None:
             self.queue = "default"
+        else:
+            self.queue = conf.get(self.PREFIX_NAME+".queue")[0]
         self.queueMonitor   = queueMonitor
         self.job_types      =[]
         self.job_types      += conf.get(self.PREFIX_NAME+".jobs")
@@ -59,7 +60,6 @@ class Generator:
     ##make a job from job_types 
     def _make_job_(self):
         index = ConfUtils.get_type_ratio(self.job_ratios)
-        print "make job index",index
         job_maker = self.job_types[index]
         return self.job_maker_sets[job_maker].make_job()  
         
@@ -74,6 +74,10 @@ class Generator:
     ##iner method 
     def _generage_request_(self):
         pass
+
+    def is_finished(self):
+        return self.jobs.get_job_all_finished() 
+        
     
 ##generate request in order
 class OrderGenerator(Generator):
@@ -84,13 +88,15 @@ class OrderGenerator(Generator):
         Generator.__init__(self,conf,queueMonitor)
         self.current_job = None
 
-    def _generage_request_(self):
-        if self.current_job.finish is True:
+    def _generate_request_(self):
+        if self.current_job is None or self.current_job.finish is True:
             job=self._make_job_()
             self.last = time.time()
             self.current_job = job
             self._add_job_(job)
-            return list(job) 
+            jobs=[]
+            jobs.append(job)
+            return jobs 
         else:
             return None
     
@@ -125,7 +131,7 @@ class PoissonGenerator(Generator):
             k+=1
         k=k-1
         ##we do nothing
-        print "k",k
+        print "this round generate" ,k, "jobs"
         if k < 1:     return None
         new_jobs = []
         while k > 0:
@@ -165,6 +171,8 @@ class CapacityGenerator(Generator):
         job = self._make_job_()
         self._add_job_(job)
         self.last = time.time()
-        return list(job) 
+        jobs = []
+        jobs.append(job)
+        return jobs 
 
     pass 

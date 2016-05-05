@@ -19,14 +19,23 @@ class JobSet:
         job_thread.start()
 
 
-    def get_job_all_finisjed(self):
+    def get_job_all_finished(self):
+        for job in self.job_set:
+            if job.finish is False:
+                return False
+    
+        self.job_all_finished = True
         return self.job_all_finished
 
 
     def wait_to_completed(self):
-        for job_thread in self.job_thread_set:
-            print "try to join"
-            job_thread.join()
+        while True:
+            finished = True
+            for job in self.job_set:
+                if job.finish is False:
+                    finished = False
+            if finished is True:
+                break 
         self.job_all_finished = True
         
 
