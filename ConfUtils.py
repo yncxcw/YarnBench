@@ -79,10 +79,10 @@ class Configure:
         for key in self.confs.keys():
             if key.startswith(key_prefix):
                 ##we don't want this, because we only want a.b.c.d for prefix a.b.c not a.b.d.d.e
-                if len(key.split(".")) - len(key_prefix.split("."))>=2:
-                    continue
-                else:
+                if len(key.split(".")) - len(key_prefix.split(".")) == 1:
                     results.append(key)
+                else:
+                    pass
             else:
                 continue
         return results
@@ -100,12 +100,11 @@ class ParameterService:
     def __init__(self,conf,PREFIX_NAME):
         self.conf      = conf
         parameter_keys = self.conf.get_prefix(PREFIX_NAME+".parameters")
-        print PREFIX_NAME
-        self.run_time  = self.conf.get("runtime")
+        self.run_time  = int(self.conf.get("runtime")[0])
         self.parameter_slice_set = {}
         for parameter_key in parameter_keys:
-            initial = self.conf.get(PREFIX_NAME+".parameters."+parameter_key)[0]
-            slice   = self.conf.get(PREFIX_NAME+".parameters."+parameter_key+".slice")
+            initial = float(self.conf.get(parameter_key)[0])
+            slice   = self.conf.get(parameter_key+".slice")
             parameter_slice = ParameterSlice(
                                             name       =parameter_key,
                                             value      =initial      ,
@@ -142,11 +141,11 @@ class ParameterSlice:
         ##which means initial value
         self.current_slice = 0
         self._add_slice_(slices_new)
-        self.runtime = runtime
+        self.runtime = run_time
         
 
     def _add_slice_(self,slices_new):
-        if slice is None:
+        if slices_new is None:
             self.mult_slice = False
             return
         for term in slices_new.split(","):
@@ -192,7 +191,7 @@ def get_type_ratio(ratios):
     sums       =sum(ratios)
     for i in range(len(ratios)):
         sum_ratio = sum_ratio + ratios[i]
-        inc_ratio.append(sum_ratio*1.0/sums)
+        inc_ratios.append(sum_ratio*1.0/sums)
 
     ##generate a radom 0<x<1
     x = random.random()

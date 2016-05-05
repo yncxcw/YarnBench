@@ -2,7 +2,7 @@
 import ConfUtils
 import Queue
 import Generator
-
+import time
 
 class SchedulerPlan:
 
@@ -29,7 +29,7 @@ class SchedulerPlan:
         self.queueMonitor.monitor_queue()
 
 
-        self.generatos = []
+        self.generators = []
         ##try to make generator
         generator_types= []
         generator_types += self.conf.get("generators")
@@ -53,7 +53,7 @@ class SchedulerPlan:
                 print "generator: CapacityGenerator"
             else:
                 raise Exception("unknown generator")
-            generatos.append(generator)
+            self.generators.append(generator)
 
         ##get run time
         self.run_time = self.conf.get("runtime")
@@ -71,14 +71,17 @@ class SchedulerPlan:
             for generator in self.generators:
                 new_jobs = generator.generate_request()
                 ##store new jobs
-                self.jobs += new_jobs 
+                if new_jobs is None:
+                    continue
+                else:
+                    self.jobs += new_jobs 
             time.sleep(1)
                  
         
          
 if __name__ =="__main__":
 
-    scheduelr_plan = SchedulerPlan()
+    scheduler_plan = SchedulerPlan()
     scheduler_plan.run()
 
 

@@ -153,10 +153,16 @@ class JobRecorder:
             run_list.append(input)
         run_list.append(self.job_output)
 
-        print run_list
+        final_run_list = []
+        for run in run_list:
+            if run is None:
+                final_run_list.append("")
+            else:
+                final_run_list.append(run)
+        print final_run_list
+        print len(final_run_list)
         FNULL=open(os.devnull,'w')
-        run_command=' '.join(run_list)
-        subprocess.Popen(run_list,stdout=FNULL,stderr=subprocess.STDOUT)
+        subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
         self.job_submit_time=time.time()
         print self.job_submit_time 
         while self.finish is False:
@@ -251,13 +257,13 @@ class SparkSQLJobRecorder(JobRecorder):
 class HiBenchJobRecorder(JobRecorder):
 
     def __init__(self,job_home,job_user,job_type,job_exe):
-        JobRecorder.__init__(self.job_home,job_user)
+        JobRecorder.__init__(self,job_home,job_user)
         assert(job_type=="spark" or job_type=="mapreduce")
         self.job_type = job_type
         if job_type == "mapreduce":
-            self.JOB_BIN = self.JOB_HOME+"/workloads"+job_exe+"/"+job_type+"/"+"bin/run.sh"
+            self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"bin/run.sh"
         else:
-            self.JOB_BIN = self.JOB_HOME+"/workloads"+job_exe+"/"+job_type+"/"+"java/bin/run.sh"
+            self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"java/bin/run.sh"
 
     def get_type(self):
         if self.job_type == "spark":
@@ -296,14 +302,14 @@ class MakeJob:
             self.job_conf[job] = {}
             ##TODO we can do some check here
             if conf.get(self.PREFIX_NAME+"."+job+".jars") is None:
-                self.job_conf[job]["jars"] = None
+                self.job_conf[job]["jars"] = ""
             else: 
                 self.job_conf[job]["jars"] = conf.get(self.PREFIX_NAME+"."+job+".jars")[0]
            
             self.job_conf[job]["inputs"] = []
 
             if conf.get(self.PREFIX_NAME+"."+job+".inputs") is None:
-                self.job_conf[job]["inputs"] = None
+                self.job_conf[job]["inputs"] = ""
             else:
                 self.job_conf[job]["inputs"] += conf.get(self.PREFIX_NAME+"."+job+".inputs")     
 

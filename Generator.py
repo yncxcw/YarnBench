@@ -5,6 +5,7 @@ import sys
 import JobRecorder
 import ConfUtils
 import math
+import random
 
 class Generator:
 
@@ -53,13 +54,14 @@ class Generator:
         ##we try to update scheduler
         self._update_()
         ##try to generate request
-        return self._generage_request_()
+        return self._generate_request_()
 
     ##make a job from job_types 
     def _make_job_(self):
         index = ConfUtils.get_type_ratio(self.job_ratios)
+        print "make job index",index
         job_maker = self.job_types[index]
-        return job_maker_sets[job_maker].make_job()  
+        return self.job_maker_sets[job_maker].make_job()  
         
 
     def _add_job_(self,job):
@@ -111,8 +113,9 @@ class PoissonGenerator(Generator):
         ##if we reach the interval to schedule
         if time.time() - self.last < self.interval:
             return None
+
         self.last = time.time()
-       
+      
         p = 1.0
         k = 0
         e = math.exp(-1)
@@ -122,6 +125,7 @@ class PoissonGenerator(Generator):
             k+=1
         k=k-1
         ##we do nothing
+        print "k",k
         if k < 1:     return None
         new_jobs = []
         while k > 0:
@@ -161,6 +165,6 @@ class CapacityGenerator(Generator):
         job = self._make_job_()
         self._add_job_(job)
         self.last = time.time()
-        return job 
+        return list(job) 
 
     pass 
