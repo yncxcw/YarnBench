@@ -231,7 +231,7 @@ class SparkJobRecorder(JobRecorder):
         self.job_input      =job_input
         self.job_output     =job_output    
         self.JOB_BIN        =self.JOB_HOME+"/bin/spark-submit"
-        self.JOB_JOB_HISTORY="/spark/spark-events"+self.JOB_USER
+        self.JOB_JOB_HISTORY="/spark/spark-events/"+self.JOB_USER
         pass 
 
     def get_type(self):
@@ -268,24 +268,25 @@ class HiBenchJobRecorder(JobRecorder):
 
 class MakeJob:
 
-    PREFIX = None
+    PREFIX_NAME = None
     
  
     def __init__(self,conf):
         self.conf     = conf
         self.job_conf = {}
         self.job_home =None
-        self.job_user =conf.get("user")
-        self.jobs     =list(conf.get(PREFIX))
-        
-        if len(self.jobs) > 1:
-            if conf.get(PREFIX+".ratios") is None:
-                ##equal share
-                self.ratios = [1 for i in range(len(self.jobs))]
-            else:
-                self.ratios = map(lambda x:float(x),list(conf.get(PREFIX+".ratios")))
+        self.job_user =conf.get("user")[0]
+        self.jobs     = []
+        if conf.get(self.PREFIX_NAME) is None:
+            raise Exception("jobs can not be null")
+       
+        self.jobs += conf.get(self.PREFIX_NAME)
+
+        if conf.get(self.PREFIX_NAME+".ratios") is None:
+            ##equal share
+            self.ratios = [1 for i in range(len(self.jobs))]
         else:
-            self.ratios=[1]
+            self.ratios = map(lambda x:float(x),conf.get(self.PREFIX_NAME+".ratios"))
 
         ##we should terminate here if we have exception 
         if len(self.jobs) != len(self.ratios):
@@ -294,44 +295,48 @@ class MakeJob:
         for job in self.jobs:
             self.job_conf[job] = {}
             ##TODO we can do some check here
-            self.job_conf[job]["jars"  ]    = conf.get(PREFIX+"."+job+".jars")
-            assert(self.job_conf[job]["jars"] is not None)
-            ##we must have this path
-            assert(os.path.exists(self.job_conf[job]["jars"]))
-            
-            if conf.get(PREFIX+"."+job+".inputs") is None:
+            if conf.get(self.PREFIX_NAME+"."+job+".jars") is None:
+                self.job_conf[job]["jars"] = None
+            else: 
+                self.job_conf[job]["jars"] = conf.get(self.PREFIX_NAME+"."+job+".jars")[0]
+           
+            self.job_conf[job]["inputs"] = []
+
+            if conf.get(self.PREFIX_NAME+"."+job+".inputs") is None:
                 self.job_conf[job]["inputs"] = None
             else:
-                self.job_conf[job]["inputs"] = list(conf.get(PREFIX+"."+job+".inputs"))     
+                self.job_conf[job]["inputs"] += conf.get(self.PREFIX_NAME+"."+job+".inputs")     
 
-            self.job_conf[job]["output"]     = conf.get(PREFIX+"."+job+".output")
+            if conf.get(self.PREFIX_NAME+"."+job+".output") is None: 
+                self.job_conf[job]["output"] = None
+            else: 
+                self.job_conf[job]["output"] = conf.get(self.PREFIX_NAME+"."+job+".output")[0]
 
             ##hadoop.jobs.wordcount.parameters should override hadoop.jobs.parameters if not null
-            if conf.get(PREFIX+"."+job+".parameters") is not None: 
-                parameters = list(conf.get(PREFIX+"."+job+".parameters"))
-            elif conf.get(PREFIX+".parameters")  is not None:
-                parameters = list(conf.get(PREFIX+".parameters"))
+            parameters = []
+            if conf.get(self.PREFIX_NAME+"."+job+".parameters") is not None: 
+                parameters += conf.get(self.PREFIX_NAME+"."+job+".parameters")
+            elif conf.get(self.PREFIX_NAME+".parameters")  is not None:
+                parameters += conf.get(self.PREFIX_NAME+".parameters")
             else:
-                parameters = None
+                pass
 
             self.job_conf[job]["parameters"] = parameters
 
+            keyvalues = []
 
-            if conf.get(PREFIX+"."+job+".keyvalues") is not None:
-                keyvalues = conf.get(PREFIX+"."+job+".keyvalues")
-            elif conf.get(PREFIX+".keyvalues")  is not None:
-                keyvalues = conf.get(PREFIX+".keyvalues")
+            if conf.get(self.PREFIX_NAME+"."+job+".keyvalues") is not None:
+                keyvalues += conf.get(self.PREFIX_NAME+"."+job+".keyvalues")
+            elif conf.get(self.PREFIX_NAME+".keyvalues")  is not None:
+                keyvalues += conf.get(self.PREFIX_NAME+".keyvalues")
             else:
-                keyvalues =  None 
+                pass
 
-            if keyvalues is None:
-                key_values = None
-            else: 
-                key_values = {}
-                for key_value in list(keyvalues):
-                    key  = key_value.split(":")[0].strip()
-                    value= key_value.split(":")[1].strip()
-                    key_values[key] = value
+            key_values = {}
+            for key_value in keyvalues:
+                key  = key_value.split(":")[0].strip()
+                value= key_value.split(":")[1].strip()
+                key_values[key] = value
 
             self.job_conf[job]["keyvalues"] = key_values
 
@@ -371,7 +376,7 @@ class HadoopMakeJob(MakeJob):
     
     def __init__(self,conf):
         MakeJob.__init__(self,conf)
-        self.job_home = self.conf["hadoop.home"]
+        self.job_home = self.conf.get("hadoop.home")[0]
 
 
     def make_job(self):
@@ -404,7 +409,7 @@ class SparkMakeJob(MakeJob):
 
     def __init__(self,conf):
         MakeJob.__init__(self,conf)
-        self.job_home = self.conf["spark.home"]
+        self.job_home = self.conf.get("spark.home")[0]
 
     def make_job(self):
         index = ConfUtils.get_type_ratio(self.ratios)
@@ -432,7 +437,7 @@ class SparkSQLMakeJob(MakeJob):
 
     def __init__(self,conf):
         MakeJob.__init__(self,conf)
-        self.job_home = self.conf["spark.home"]
+        self.job_home = self.conf.get("spark.home")[0]
 
     def make_job(self):
         index = ConfUtils.get_type_ratio(self.ratios) 
@@ -445,7 +450,7 @@ class SparkSQLMakeJob(MakeJob):
 
         self.add_keyvalues(name,job)
         ##add sql file path with "-f"
-        sql_path = self.conf[PREFIX_NAME+".path"]+name 
+        sql_path = self.conf[self.PREFIX_NAME+".path"]+name 
         assert(os.path.exists(sql_path))
         job.add_keyvalues("-f",sql_path)
         self.add_parameters(name,job)
@@ -458,12 +463,12 @@ class HiBenchMakeJob(MakeJob):
 
     def __init__(self,conf):
         MakeJob.__init__(self,conf)
-        self.job_home  = self.conf["hibench.home"]
-        types = list(self.conf["hibench.jobs.types"])
+        self.job_home  = self.conf.get("hibench.home")[0]
+        types = self.conf.get("hibench.jobs.types")
         if types is None:
             self.job_types = ["mapreduce" for i in range(len(self.jobs))]
         else:
-            self.job_types = list(types)
+            self.job_types = types
 
 
     def make_job(self):
@@ -474,8 +479,7 @@ class HiBenchMakeJob(MakeJob):
                                   job_home = self.job_home,
                                   job_user = self.job_user,
                                   job_type = self.job_types[index],
-                                  job_exe  = name                                 
-                                  )
+                                  job_exe  = name                                                                  )
 
         ##we do not have parameters and keyvalues here
         return job

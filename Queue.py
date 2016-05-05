@@ -24,7 +24,7 @@ class QueueMonitor:
 
     def __init__(self,conf):
         self.conf  = conf
-        self.url   = conf.get("hadoop.url")+"/ws/v1/cluster/scheduler"
+        self.url   = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
 
 
     def monitor_queue(self):
@@ -32,7 +32,7 @@ class QueueMonitor:
 
     @staticmethod
     def get_scheduler_type(conf):
-        url = conf.get("hadoop.url")+"/ws/v1/cluster/scheduler"
+        url = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
         dict_read = ConfUtils.read_json_url(url)
         scheduler_type = dict_read["scheduler"]["schedulerInfo"]["type"]
         return scheduler_type

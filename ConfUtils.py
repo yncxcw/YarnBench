@@ -42,11 +42,15 @@ class Configure:
                     key   = line.split("=")[0].strip()
                     value = line.split("=")[1].strip()
                     ##if value contains more options
+                    value_list = []
                     if ","in value:
                         value = value.split(",")
                         value = list(map(lambda x:x.strip(),value))
-                    
-                    self.confs[key] = value
+                        value_list+=value
+                    else:
+                        value_list.append(value)
+                   
+                    self.confs[key] = value_list
            		
         except (IOError,OSError) as error:
 	        print "error during initialize configure %s",error
@@ -55,6 +59,8 @@ class Configure:
 	    		
     ## get configuration value corresponding to key
     def get(self,key):
+        if self.confs.get(key) is None:
+            return None
         try:
             if self.confs[key] is not None:
                 return self.confs[key]
@@ -73,7 +79,7 @@ class Configure:
         for key in self.confs.keys():
             if key.startswith(key_prefix):
                 ##we don't want this, because we only want a.b.c.d for prefix a.b.c not a.b.d.d.e
-                if len(key.replace(key_prefix,"").split(".")) > 2:
+                if len(key.split(".")) - len(key_prefix.split("."))>=2:
                     continue
                 else:
                     results.append(key)
@@ -93,17 +99,18 @@ class ParameterService:
 
     def __init__(self,conf,PREFIX_NAME):
         self.conf      = conf
-        parameter_keys = self.conf.get_prefix(REFIX_NAME+".parameters")
+        parameter_keys = self.conf.get_prefix(PREFIX_NAME+".parameters")
+        print PREFIX_NAME
         self.run_time  = self.conf.get("runtime")
         self.parameter_slice_set = {}
         for parameter_key in parameter_keys:
-            initial = self.conf.get(PREFIX_NAME+".parameters."+parameter_key)
+            initial = self.conf.get(PREFIX_NAME+".parameters."+parameter_key)[0]
             slice   = self.conf.get(PREFIX_NAME+".parameters."+parameter_key+".slice")
             parameter_slice = ParameterSlice(
-                                            name    =parameter_key,
-                                            value   =initial      ,
-                                            slices_new   =slice   ,
-                                            run_time=self.run_time
+                                            name       =parameter_key,
+                                            value      =initial      ,
+                                            slices_new =slice        ,
+                                            run_time   =self.run_time
                                             )
             self.parameter_slice_set[parameter_key] = parameter_slice
         

@@ -8,14 +8,16 @@ import math
 
 class Generator:
 
-    self.PREFIX_NAME=None
+    PREFIX_NAME=None
     ##a generator can only submit job one queue
     def __init__(self,conf,queueMonitor):
-        self.queue          = conf.get(self.PREFIX_NAME+".queue")
+        self.conf           = conf
+        self.queue          = conf.get(self.PREFIX_NAME+".queue")[0]
         if self.queue is None:
             self.queue = "default"
         self.queueMonitor   = queueMonitor
-        self.job_types      = list(conf.get(self.PREFIX_NAME+".jobs"))
+        self.job_types      =[]
+        self.job_types      += conf.get(self.PREFIX_NAME+".jobs")
         self.job_maker_sets = {}
         ##TODO Reflection
         for job in self.job_types:
@@ -37,7 +39,7 @@ class Generator:
         if jobratios is None:
             self.job_ratios  = [1 for i in range(len(self.job_types))] 
         else:
-            self.job_ratios  = map(lambda x:float(x), list(conf.get(self.PREFIX_NAME+".jobs.ratios")))
+            self.job_ratios  = map(lambda x:float(x), conf.get(self.PREFIX_NAME+".jobs.ratios"))
         ##read in parameters which we want to update during execution
         self.parameter_service = ConfUtils.ParameterService(conf=self.conf,PREFIX_NAME=self.PREFIX_NAME) 
         ## last time to call generate_request
@@ -74,10 +76,10 @@ class Generator:
 ##generate request in order
 class OrderGenerator(Generator):
 
-    self.PREFIX_NAME = "generator.OrderGenerator"
+    PREFIX_NAME = "generator.OrderGenerator"
 
     def __init__(self,conf,queueMonitor):
-        Generator.__init__(conf,queueMonitor)
+        Generator.__init__(self,conf,queueMonitor)
         self.current_job = None
 
     def _generage_request_(self):
@@ -94,16 +96,16 @@ class OrderGenerator(Generator):
 ##generate request in Poisson distribution       
 class PoissonGenerator(Generator):
 
-    self.PREFIX_NAME = "generator.PoissonGenerator"
+    PREFIX_NAME = "generator.PoissonGenerator"
 
     def __init__(self,conf,queueMonitor):
-        Generator.__init__(conf,queueMonitor)
+        Generator.__init__(self,conf,queueMonitor)
         ## how long(s) we need to check if we need to submit a job
-        self.interval = self.parameter_service.get_current_value("interval")
+        self.interval = self.parameter_service.get_parameter("interval")
 
 
     def _update_(self):
-        self.interval = self.parameter_service.get_current_value("interval")
+        self.interval = self.parameter_service.get_parameter("interval")
 
     def _generate_request_(self):
         ##if we reach the interval to schedule
@@ -132,17 +134,17 @@ class PoissonGenerator(Generator):
 ##generate request in to match the capacity that user set
 class CapacityGenerator(Generator):
     
-    self.PREFIX_NAME = "generator.CapacityGenerator"
+    PREFIX_NAME = "generator.CapacityGenerator"
 
     def __init__(self,conf,queueMonitor):
         Generator.__init__(conf,queueMonitor)
         ## we wait 10s to make our new submition effectively occupy the cluster resource
         self.interval       = 10
-        self.usedCapacity   = self.parameter_service.get_current_value("usedCapacity")
+        self.usedCapacity   = self.parameter_service.get_parameter("usedCapacity")
  
 
     def _update_(self):
-        self.usedCapacity   = self.parameter_service.get_current_value("usedCapacity")
+        self.usedCapacity   = self.parameter_service.get_parameter("usedCapacity")
 
     def _generate_request_(self):
         ##to minimize overhead, we monitor when needed

@@ -1,6 +1,8 @@
 #!/bin/python
 import ConfUtils
 import Queue
+import Generator
+
 
 class SchedulerPlan:
 
@@ -8,7 +10,7 @@ class SchedulerPlan:
     def __init__(self):
         ##global variable, we only have one plan at any time
         self.conf = ConfUtils.Configure()
-        self.cluster_url = self.conf.get("hadoop.url")+"/ws/v1/cluster/info"
+        self.cluster_url = self.conf.get("hadoop.url")[0]+"/ws/v1/cluster/info"
 
         ##check the cluster is running
         clusterInfo=ConfUtils.read_json_url(self.cluster_url)
@@ -29,26 +31,25 @@ class SchedulerPlan:
 
         self.generatos = []
         ##try to make generator
-        generator_types_t = self.conf.get("generators")
+        generator_types= []
+        generator_types += self.conf.get("generators")
 
-        if generator_types_t is None:
+        if len(generator_types) is 0:
             raise Exception("missing generators")
-        else:
-            generator_types = list(generator_types_t)
 
-        print len(generator_types)
         ##TODO reflection
         for generator_type in generator_types:
-            print generator_type
             if generator_type == "OrderGenerator":
-                generator = OrderGenerator(self.conf,self.queueMonitor)
+                generator = Generator.OrderGenerator(self.conf,self.queueMonitor)
                 ##TODO log
                 print "generator: OderGenerator" 
             elif generator_type == "PoissonGenerator":
-                generator = PoissonGenerator(self.conf,self.queueMonitor)
+                generator = Generator.PoissonGenerator(self.conf,self.queueMonitor)
+                ##TODO log
                 print "generator: PoissonGenerator"
             elif generator_type == "CapacityGenerator":
-                generator = CapacityGenerator(self.conf,self.queueMonitor)
+                generator = Generaor.CapacityGenerator(self.conf,self.queueMonitor)
+                ##TODO log
                 print "generator: CapacityGenerator"
             else:
                 raise Exception("unknown generator")
