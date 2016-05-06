@@ -49,7 +49,7 @@ prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 # run bench
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
-CMD="$HIVE_HOME/bin/hive -hiveconf mapred.job.queue.name=${QUEUE_NAME} -f ${HIVEBENCH_SQL_FILE}"
+CMD="$HIVE_HOME/bin/hive --hiveconf mapred.job.queue.name=${QUEUE_NAME} -f ${HIVEBENCH_SQL_FILE}"
 execute_withlog $CMD
 END_TIME=`timestamp`
 stop-monitor $MONITOR_PID
