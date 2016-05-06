@@ -29,6 +29,19 @@ cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 # path check
 rmr-hdfs $OUTPUT_HDFS
 
+
+if [ $# -eq 1  ]
+then
+    OUTPUT_HDFS=$1
+fi
+
+if [ $# -eq 2  ]
+then
+    OUTPUT_HDFS=$1
+    QUEUE_NAME=$2
+fi
+
+
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}

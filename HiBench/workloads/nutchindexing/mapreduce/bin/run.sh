@@ -32,10 +32,25 @@ SIZE=`dir_size $INPUT_HDFS`
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 
+if [ $# -eq 1  ]
+then
+    OUTPUT_HDFS=$1
+fi
+
+if [ $# -eq 2  ]
+then
+    OUTPUT_HDFS=$1
+    QUEUE_NAME=$2
+fi
+
+
+
+
+
 export_withlog HIBENCH_WORKLOAD_CONF
 NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME_WORKLOAD/conf
 export_withlog NUTCH_CONF_DIR
-CMD="$NUTCH_HOME_WORKLOAD/bin/nutch index ${COMPRESS_OPT} $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*"
+CMD="$NUTCH_HOME_WORKLOAD/bin/nutch index -D mapreduce.job.queuename=${QUEUE_NAME} ${COMPRESS_OPT} $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*"
 execute_withlog $CMD
 
 END_TIME=`timestamp`

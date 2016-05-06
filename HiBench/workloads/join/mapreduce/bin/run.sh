@@ -34,10 +34,25 @@ HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_join.hive
 
 prepare-sql-join ${HIVEBENCH_SQL_FILE}
 
+
+if [ $# -eq 1  ]
+then
+    OUTPUT_HDFS=$1
+fi
+
+if [ $# -eq 2  ]
+then
+    OUTPUT_HDFS=$1
+    QUEUE_NAME=$2
+fi
+
+
+
+
 # run bench
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
-CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
+CMD="$HIVE_HOME/bin/hive -hiveconf mapred.job.queue.name=${QUEUE_NAME} -f ${HIVEBENCH_SQL_FILE}"
 execute_withlog $CMD
 END_TIME=`timestamp`
 stop-monitor $MONITOR_PID

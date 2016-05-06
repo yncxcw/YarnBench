@@ -29,12 +29,25 @@ cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 # path check
 rmr-hdfs $OUTPUT_HDFS
 
+
+if [ $# -eq 1  ]
+then
+    OUTPUT_HDFS=$1
+fi
+
+if [ $# -eq 2  ]
+then
+    OUTPUT_HDFS=$1
+    QUEUE_NAME=$2
+fi
+
+
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
 # run bench
-CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
+CMD="$HIVE_HOME/bin/hive -hiveconf mapred.job.queue.name=${QUEUE_NAME}  -f ${HIVEBENCH_SQL_FILE}"
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 execute_withlog $CMD

@@ -35,8 +35,23 @@ export HADOOP_OPTS="${HADOOP_OPTS:-} -Dtest.build.data=${INPUT_HDFS} "
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 
+if [ $# -eq 1  ]
+then
+    OUTPUT_HDFS=$1
+fi
+
+if [ $# -eq 2  ]
+then
+    OUTPUT_HDFS=$1
+    QUEUE_NAME=$2
+fi
+
+
+
+
 #run benchmark
 run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
+    -D mapreduce.job.queuename=${QUEUE_NAME}                                      \
     -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS"    \
     -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS" \
     ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_read.txt                  \

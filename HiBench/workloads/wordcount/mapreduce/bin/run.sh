@@ -37,9 +37,6 @@ then
 fi
 
 
-
-
-
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} wordcount ${COMPRESS_OPT} \
