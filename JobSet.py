@@ -2,7 +2,7 @@
 
 
 from threading import Thread
-
+import time
 class JobSet:
 
 
@@ -35,7 +35,9 @@ class JobSet:
                 if job.finish is False:
                     finished = False
             if finished is True:
-                break 
+                break
+            else:
+                time.sleep(1) 
         self.job_all_finished = True
         
 
