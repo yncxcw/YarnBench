@@ -24,13 +24,13 @@ class Generator:
         ##TODO Reflection
         for job in self.job_types:
             if job == "hadoop":
-                job_maker = JobRecorder.HadoopMakeJob(conf)                 
+                job_maker = JobRecorder.HadoopMakeJob(conf,self,queue)                 
             elif job == "spark":
-                job_maker = JobRecorder.SparkMakeJob(conf)
+                job_maker = JobRecorder.SparkMakeJob(conf,self.queue)
             elif job == "sparksql":
-                job_maker = JobRecorder.SparkSQLMakeJob(conf)
+                job_maker = JobRecorder.SparkSQLMakeJob(conf,self.queue)
             elif job == "hibench":
-                job_maker =JobRecorder.HiBenchMakeJob(conf)
+                job_maker =JobRecorder.HiBenchMakeJob(conf,self.queue)
             else:
                 print "error:job type not exits"
             self.job_maker_sets[job] = job_maker

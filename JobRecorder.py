@@ -302,8 +302,6 @@ class HiBenchJobRecorder(JobRecorder):
         else:
             self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"java/bin/run.sh"
 
-        ##random generate output dic
-        self.job_output = "/output_"+job_exe+"_"+job_type+"_"+str(random.randint(1,1000)) 
 
     def get_type(self):
         if self.job_type == "spark":
@@ -317,11 +315,12 @@ class MakeJob:
     PREFIX_NAME = None
     
  
-    def __init__(self,conf):
+    def __init__(self,conf,queue):
         self.conf     = conf
         self.job_conf = {}
         self.job_home =None
         self.job_user =conf.get("user")[0]
+        self.queue    =queue
         self.jobs     = []
         if conf.get(self.PREFIX_NAME) is None:
             raise Exception("jobs can not be null")
@@ -420,7 +419,7 @@ class HadoopMakeJob(MakeJob):
 
     PREFIX_NAME = "hadoop.jobs"
     
-    def __init__(self,conf):
+    def __init__(self,conf,queue):
         MakeJob.__init__(self,conf)
         self.job_home = self.conf.get("hadoop.home")[0]
 
@@ -432,7 +431,12 @@ class HadoopMakeJob(MakeJob):
         jar    = self.job_conf[name]["jars"]
         exe    = name
         inputs = self.job_conf[name]["inputs"]
-        output = self.job_conf[name]["output"]
+
+        if self.job_conf[name]["output"] is not None:
+            output = self.job_conf[name]["output"]
+        else:
+            output = "/output_"+"hadoop"+exe+"_"+str(random.randint(1,1000)) 
+
         job = HadoopJobRecorder(
                                 job_home = self.job_home,
                                 job_user = self.job_user,
@@ -444,6 +448,7 @@ class HadoopMakeJob(MakeJob):
                                 )
         self.add_parameters(name,job)
         self.add_keyvalues(name,job)
+        job.add_keyvalues("-D","mapreduce.job.queuename="+self.queue) 
         return job
 
                 
@@ -454,8 +459,8 @@ class SparkMakeJob(MakeJob):
     PREFIX_NAME = "spark.jobs"
 
 
-    def __init__(self,conf):
-        MakeJob.__init__(self,conf)
+    def __init__(self,conf,queue):
+        MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
     def make_job(self):
@@ -465,7 +470,12 @@ class SparkMakeJob(MakeJob):
         jar    = self.job_conf[name]["jars"]
         exe    = name
         inputs = self.job_conf[name]["inputs"]
-        output = self.job_conf[name]["output"]
+    
+        if self.job_conf[name]["output"] is not None:
+            output = self.job_conf[name]["output"]
+        else:
+            output = "/output_"+"spark"+exe+"_"+str(random.randint(1,1000)) 
+
         job = SparkJobRecorder(
                                 job_home = self.job_home,
                                 job_user = self.job_user,
@@ -477,14 +487,15 @@ class SparkMakeJob(MakeJob):
                                 )
         self.add_parameters(name,job)
         self.add_keyvalues(name,job)
+        job.add_keyvalues("--queue",self.queue)
         return job
 
 class SparkSQLMakeJob(MakeJob):
  
     PREFIX_NAME = "sparksql.jobs"
 
-    def __init__(self,conf):
-        MakeJob.__init__(self,conf)
+    def __init__(self,conf,queue):
+        MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
     def make_job(self):
@@ -501,6 +512,7 @@ class SparkSQLMakeJob(MakeJob):
         ##add sql file path with "-f"
         sql_path = self.conf[self.PREFIX_NAME+".path"]+name 
         assert(os.path.exists(sql_path))
+        job.add_keyvalues("--queue",self.queue)
         job.add_keyvalues("-f",sql_path)
         self.add_parameters(name,job)
         return job
@@ -510,8 +522,8 @@ class HiBenchMakeJob(MakeJob):
 
     PREFIX_NAME="hibench.jobs"
 
-    def __init__(self,conf):
-        MakeJob.__init__(self,conf)
+    def __init__(self,conf,queue):
+        MakeJob.__init__(self,conf,queue)
         self.job_home  = self.conf.get("hibench.home")[0]
         types = self.conf.get("hibench.jobs.types")
         if types is None:
@@ -531,7 +543,10 @@ class HiBenchMakeJob(MakeJob):
                                   job_exe  = name,
                                   conf     = self.conf
                                   )
-
+        ##random generate output dic
+        job_output = "/output_"+job_exe+"_"+job_type+"_"+str(random.randint(1,1000))
+        job.add_parameters(job_output)
+        job.add_parameters(self.queue) 
         ##we do not have parameters and keyvalues here
         return job
         
