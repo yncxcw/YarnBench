@@ -19,6 +19,20 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
+
+
 enter_bench JavaSparkJoin ${workload_root} ${workload_folder}
 show_bannar start
 
@@ -29,7 +43,7 @@ prepare-sql-join ${HIVEBENCH_SQL_FILE}
 START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS/uservisits`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.sql.JavaSparkSQLBench JavaJoin ${HIVEBENCH_SQL_FILE}
+run-spark-job --queue $QUEUE_NAME com.intel.sparkbench.sql.JavaSparkSQLBench JavaJoin ${HIVEBENCH_SQL_FILE}
 
 sleep 5
 END_TIME=`timestamp`

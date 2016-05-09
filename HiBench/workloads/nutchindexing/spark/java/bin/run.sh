@@ -19,6 +19,20 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
+
 enter_bench JavaSparkNutchindexing ${workload_root} ${workload_folder}
 show_bannar start
 echo -e "${On_Blue}Spark nutch indexing not implemented yet, nothing to do.${Color_Off}"

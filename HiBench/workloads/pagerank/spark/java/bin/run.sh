@@ -24,9 +24,21 @@ show_bannar start
 
 rmr-hdfs $OUTPUT_HDFS || true
 
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job org.apache.spark.examples.JavaPageRank $INPUT_HDFS/edges $OUTPUT_HDFS $NUM_ITERATIONS
+run-spark-job  --queue ${QUEUE_NAME} org.apache.spark.examples.JavaPageRank $INPUT_HDFS/edges $OUTPUT_HDFS $NUM_ITERATIONS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

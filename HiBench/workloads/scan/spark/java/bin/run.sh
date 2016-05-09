@@ -22,13 +22,26 @@ workload_root=${workload_folder}/../../..
 enter_bench ScalaSparkScan ${workload_root} ${workload_folder}
 show_bannar start
 
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
+
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.sql.JavaSparkSQLBench JavaScan ${HIVEBENCH_SQL_FILE}
+run-spark-job --queue ${QUEUE_NAME} com.intel.sparkbench.sql.JavaSparkSQLBench JavaScan ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5

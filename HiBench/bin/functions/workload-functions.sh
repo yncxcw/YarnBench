@@ -221,9 +221,14 @@ function check_compress() {
 
 function run-spark-job() {
     LIB_JARS=
+    QUEUE=
     while (($#)); do
       if [ "$1" = "--jars" ]; then
         LIB_JARS="--jars $2"
+        shift 2
+        continue
+      elif [ "$1" = "--queue" ]; then
+        QUEUE="--queue $2"
         shift 2
         continue
       fi
@@ -252,9 +257,9 @@ function run-spark-job() {
     fi
     if [[ "$CLS" == *.py ]]; then 
         LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
-        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@"
+        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER}  ${QUEUE}  ${YARN_OPTS} ${CLS} $@"
     else
-        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
+        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${QUEUE}  ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
     MONITOR_PID=`start-monitor`

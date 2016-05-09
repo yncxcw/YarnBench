@@ -19,6 +19,18 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
 enter_bench JavaSparkAggregation ${workload_root} ${workload_folder}
 show_bannar start
 
@@ -28,7 +40,7 @@ prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.sql.JavaSparkSQLBench JavaAggregation ${HIVEBENCH_SQL_FILE}
+run-spark-job --queue $QUEUE_NAME com.intel.sparkbench.sql.JavaSparkSQLBench JavaAggregation ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5

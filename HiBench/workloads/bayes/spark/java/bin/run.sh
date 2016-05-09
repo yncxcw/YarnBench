@@ -19,6 +19,19 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+if [ $# -eq 1 ]
+then
+  OUTPUT_HDFS=$1
+fi
+
+
+if [ $# -eq 2 ]
+then
+ OUTPUT_HDFS=$1
+ QUEUE_NAME=$2
+fi
+
+
 enter_bench JavaSparkBayes ${workload_root} ${workload_folder}
 show_bannar start
 
@@ -26,7 +39,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job com.intel.sparkbench.bayes.JavaBayes ${INPUT_HDFS}
+run-spark-job --queue $QUEUE_NAME com.intel.sparkbench.bayes.JavaBayes ${INPUT_HDFS}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
