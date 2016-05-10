@@ -522,7 +522,7 @@ class SparkSQLMakeJob(MakeJob):
     def make_job(self):
         index = ConfUtils.get_type_ratio(self.ratios) 
         assert(index >=0 and index < len(self.jobs))
-        name  = self.jobs[index] 
+        name  = self.jobs[index]
         job = SparkSQLJobRecorder(
                                  job_home = self.job_home,
                                  job_user = self.job_user,
@@ -532,7 +532,9 @@ class SparkSQLMakeJob(MakeJob):
         job.exe = name
         self.add_keyvalues(name,job)
         ##add sql file path with "-f"
-        sql_path = self.conf[self.PREFIX_NAME+".path"]+name 
+        print self.PREFIX_NAME
+        print name
+        sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
         assert(os.path.exists(sql_path))
         job.add_keyvalues("--queue",self.queue)
         job.add_keyvalues("-f",sql_path)
