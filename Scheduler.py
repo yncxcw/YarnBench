@@ -90,6 +90,8 @@ class SchedulerPlan:
                 break
 
         print "finish"
+        for generator in self.generators:
+            generator.generate_reports()
         
             
                  

@@ -39,4 +39,10 @@ class JobSet:
         self.job_all_finished = True
         
 
+    def generate_job_report():
+        report=""
+        for job in job_set:
+            report = report + job.generate_job_report()+"\n"\
+        return report
+
 

@@ -50,6 +50,12 @@ class Generator:
         self.jobs        = JobSet()
         pass
     
+    def generate_reports(self):
+        report = self.jobs.generate_job_report()
+        f =open(self.PREFIX_NAME+".report","w")
+        f.write(report)
+        f.close()
+        
     ##return true if generate a new request
     def generate_request(self):
         ##we try to update scheduler

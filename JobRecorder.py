@@ -92,7 +92,10 @@ class JobRecorder:
     def generate_job_name(self):
         stamp=str(random.randint(0,10000))   
         self.job_name=self.exe+stamp    
- 
+
+
+    def generate_job_report(self):
+        return
 
     def get_type(self):
         return None
@@ -264,6 +267,10 @@ class HadoopJobRecorder(JobRecorder):
     def get_type(self):
         return "MAPREDUCE" 
 
+    def generate_job_report(self):
+        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+
+
     
 class SparkJobRecorder(JobRecorder):
 
@@ -280,6 +287,11 @@ class SparkJobRecorder(JobRecorder):
     def get_type(self):
         return "SPARK"
 
+    def generate_job_report(self):
+        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+
+
+
 class SparkSQLJobRecorder(JobRecorder):
 
     def __init__(self, conf, job_home,job_user):
@@ -291,12 +303,17 @@ class SparkSQLJobRecorder(JobRecorder):
     def get_type(self):
         return "SPARK"
 
+    def generate_job_report(self):
+        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+
+
 class HiBenchJobRecorder(JobRecorder):
 
     def __init__(self,conf,job_home,job_user,job_type,job_exe):
         JobRecorder.__init__(self,job_home,job_user,conf)
         assert(job_type=="spark" or job_type=="mapreduce")
         self.job_type = job_type
+        self.exe=job_xex
         if job_type == "mapreduce":
             self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"bin/run.sh"
         else:
@@ -308,6 +325,10 @@ class HiBenchJobRecorder(JobRecorder):
             return "SPARK"
         else:
             return "MAPREDUCE"
+
+    def generate_job_report(self):
+        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+
 
 
 class MakeJob:
@@ -508,6 +529,7 @@ class SparkSQLMakeJob(MakeJob):
                                  conf     = self.conf
                                  )
 
+        job.exe = name
         self.add_keyvalues(name,job)
         ##add sql file path with "-f"
         sql_path = self.conf[self.PREFIX_NAME+".path"]+name 
