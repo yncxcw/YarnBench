@@ -45,8 +45,6 @@ sparksql.jobs.keyvalues         = --master:yarn, --jars:/opt/apache-hive-2.0.0-b
 generators = OrderGenerator
 
 generator.OrderGenerator.jobs       =sparksql
-generator.OrderGenerator.order      =true
-generator.OrderGenerator.round      =3
 generator.OrderGenerator.jobs.ratio =1
 generator.OrderGenerator.queue      =default
 generator.OrderGenerator.parameters.interval = 20
