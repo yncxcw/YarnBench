@@ -70,8 +70,12 @@ class SchedulerPlan:
         ##inital job id
         JobRecorder.refresh_job_id(self.conf)
         ##main loop
-        while self.run_time > 0:
+        generator_exist = False
+        while self.run_time > 0 and generator_exist is False:
             for generator in self.generators:
+                if generator.exist():
+                    generator_exist = True
+                    break 
                 new_jobs = generator.generate_request()
                 ##store new jobs
                 if new_jobs is None:

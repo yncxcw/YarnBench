@@ -63,6 +63,10 @@ class Generator:
         ##try to generate request
         return self._generate_request_()
 
+    ##if the generator exitst
+    def exit(self):
+        return False
+
     ##make a job from job_types 
     def _make_job_(self):
         index = ConfUtils.get_type_ratio(self.job_ratios)
@@ -93,6 +97,27 @@ class OrderGenerator(Generator):
     def __init__(self,conf,queueMonitor):
         Generator.__init__(self,conf,queueMonitor)
         self.current_job = None
+        self.count = 0
+        self.index = 0
+        self.exist = False
+
+        order = self.conf.get(PREFIX_NAME+".order")
+        if order[0] is None:
+            self.order = False
+            return
+
+        if order[0] == "true":
+            self.order = True
+        else:
+            self.order = False
+
+        round = self.conf.get(PREFIX_NAME+".round")
+
+        if round is None:
+            self.round = 1    
+        else:
+            self.round = int(round[0]) 
+ 
 
     def _generate_request_(self):
         if self.current_job is None or self.current_job.finish is True:
@@ -105,7 +130,28 @@ class OrderGenerator(Generator):
             return jobs 
         else:
             return None
-    
+   
+    def _make_job_(self):
+        if self.order is False:
+            return Generator._make_job_(self)
+        else:
+            if self.count < self.round:
+                self.count = self.count + 1
+            else:
+                self.count = 0
+                self.index = self.index + 1
+            
+            if self.index >= len(self.job_types):
+                self.exist = True
+            else:
+                job_maker = self.job_types[self.index]
+                return self.job_maker_sets[job_maker].make_job()  
+        
+
+    def exist(self):
+        self.exist 
+            
+         
             
 ##generate request in Poisson distribution       
 class PoissonGenerator(Generator):
