@@ -10,7 +10,7 @@ jobs=hibench
 user=wei
 
 ##run time(s)
-runtime=300
+runtime=3000
 
 hadoop.url = http://localhost:8088
 ##Hadoop Mapreduce job configure, Hadoop generator will randminly pick up one job to run
@@ -28,8 +28,10 @@ hadoop.url = http://localhost:8088
 sparksql.jobs.path             = /opt/apache-hive-2.0.0-bin/hive-testbench/sample-queries-tpch/
 
 ##   the final path to run query will be ./hive-test/query1
-sparksql.jobs                   = tpch_query1.sql
-sparksql.jobs.ratios            = 1
+sparksql.jobs                   = tpch_query1.sql,tpch_query3.sql,tpch_query4.sql,tpch_query5.sql,tpch_query6.sql,tpch_query7.sql,tpch_query8.sql,tpch_query9.sql,tpch_query10.sql,tpch_query11.sql,tpch_query12.sql,tpch_query13.sql,tpch_query14.sql,tpch_query15.sql,tpch_query16.sql
+
+
+#sparksql.jobs.ratios            = 1
 
 sparksql.jobs.keyvalues         = --master:yarn, --jars:/opt/apache-hive-2.0.0-bin/lib/mysql-connector-5.1.18.jar,--database:tpch_flat_orc_10             
 
@@ -45,6 +47,9 @@ sparksql.jobs.keyvalues         = --master:yarn, --jars:/opt/apache-hive-2.0.0-b
 generators = OrderGenerator
 
 generator.OrderGenerator.jobs       =sparksql
+generator.OrderGenerator.order      =true
+generator.OrderGenerator.round      =3
+generator.OrderGenerator.range      =15 
 generator.OrderGenerator.jobs.ratio =1
 generator.OrderGenerator.queue      =default
 generator.OrderGenerator.parameters.interval = 20

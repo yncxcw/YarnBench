@@ -71,7 +71,7 @@ class Generator:
     def _make_job_(self):
         index = ConfUtils.get_type_ratio(self.job_ratios)
         job_maker = self.job_types[index]
-        return self.job_maker_sets[job_maker].make_job()  
+        return self.job_maker_sets[job_maker].make_job(-1)  
         
 
     def _add_job_(self,job):
@@ -101,7 +101,7 @@ class OrderGenerator(Generator):
         self.index = 0
         self.exist = False
 
-        order = self.conf.get(PREFIX_NAME+".order")
+        order = self.conf.get(self.PREFIX_NAME+".order")
         if order[0] is None:
             self.order = False
             return
@@ -111,12 +111,19 @@ class OrderGenerator(Generator):
         else:
             self.order = False
 
-        round = self.conf.get(PREFIX_NAME+".round")
+        round = self.conf.get(self.PREFIX_NAME+".round")
 
         if round is None:
             self.round = 1    
         else:
-            self.round = int(round[0]) 
+            self.round = int(round[0])
+
+        range = self.conf.get(self.PREFIX_NAME+".range")
+
+        if range is None:
+            self.range = 1
+        else:
+            self.range = int(range[0]) 
  
 
     def _generate_request_(self):
@@ -135,20 +142,23 @@ class OrderGenerator(Generator):
         if self.order is False:
             return Generator._make_job_(self)
         else:
-            if self.count < self.round:
-                self.count = self.count + 1
-            else:
-                self.count = 0
+            if self.count >= self.round:
                 self.index = self.index + 1
+                self.count = 0
+
+            self.count = self.count + 1
             
-            if self.index >= len(self.job_types):
+            if self.index >= self.range:
                 self.exist = True
+                return None
             else:
-                job_maker = self.job_types[self.index]
-                return self.job_maker_sets[job_maker].make_job()  
+                print "count",self.count,"round",self.round,"index",self.index
+                ##under this condition, we only works for first job
+                job_maker = self.job_types[0]
+                return self.job_maker_sets[job_maker].make_job(self.index)  
         
 
-    def exist(self):
+    def exit(self):
         self.exist 
             
          

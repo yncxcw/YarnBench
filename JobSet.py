@@ -45,6 +45,7 @@ class JobSet:
         report=""
         for job in job_set:
             report = report + job.generate_job_report()+"\n"\
+        
         return report
 
 

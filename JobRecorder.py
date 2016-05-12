@@ -347,6 +347,7 @@ class MakeJob:
             raise Exception("jobs can not be null")
        
         self.jobs += conf.get(self.PREFIX_NAME)
+        print self.jobs
 
         if conf.get(self.PREFIX_NAME+".ratios") is None:
             ##equal share
@@ -445,8 +446,9 @@ class HadoopMakeJob(MakeJob):
         self.job_home = self.conf.get("hadoop.home")[0]
 
 
-    def make_job(self):
-        index = ConfUtils.get_type_ratio(self.ratios)
+    def make_job(self,index):
+        if index == -1:
+            index = ConfUtils.get_type_ratio(self.ratios)
         assert(index >=0 and index < len(self.jobs))
         name   = self.jobs[index]
         jar    = self.job_conf[name]["jars"]
@@ -484,7 +486,9 @@ class SparkMakeJob(MakeJob):
         MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
-    def make_job(self):
+    def make_job(self,index):
+        if index == -1:
+            index = ConfUtils.get_type_ratio(self.ratios)
         index = ConfUtils.get_type_ratio(self.ratios)
         assert(index >=0 and index < len(self.jobs))
         name   = self.jobs[index]
@@ -519,8 +523,9 @@ class SparkSQLMakeJob(MakeJob):
         MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
-    def make_job(self):
-        index = ConfUtils.get_type_ratio(self.ratios) 
+    def make_job(self,index):
+        if index == -1:
+            index = ConfUtils.get_type_ratio(self.ratios)
         assert(index >=0 and index < len(self.jobs))
         name  = self.jobs[index]
         job = SparkSQLJobRecorder(
@@ -531,9 +536,6 @@ class SparkSQLMakeJob(MakeJob):
 
         job.exe = name
         self.add_keyvalues(name,job)
-        ##add sql file path with "-f"
-        print self.PREFIX_NAME
-        print name
         sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
         assert(os.path.exists(sql_path))
         job.add_keyvalues("--queue",self.queue)
@@ -556,7 +558,10 @@ class HiBenchMakeJob(MakeJob):
             self.job_types = types
 
 
-    def make_job(self):
+    def make_job(self,index):
+        if index == -1:
+            index = ConfUtils.get_type_ratio(self.ratios)
+
         index = ConfUtils.get_type_ratio(self.ratios) 
         assert(index >=0 and index < len(self.jobs))
         name  = self.jobs[index] 
@@ -574,5 +579,3 @@ class HiBenchMakeJob(MakeJob):
         ##we do not have parameters and keyvalues here
         return job
         
-
-

@@ -73,7 +73,7 @@ class SchedulerPlan:
         generator_exist = False
         while self.run_time > 0 and generator_exist is False:
             for generator in self.generators:
-                if generator.exist():
+                if generator.exit() is True:
                     generator_exist = True
                     break 
                 new_jobs = generator.generate_request()
