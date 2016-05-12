@@ -129,6 +129,8 @@ class OrderGenerator(Generator):
     def _generate_request_(self):
         if self.current_job is None or self.current_job.finish is True:
             job=self._make_job_()
+            if job is None:
+                return None    
             self.last = time.time()
             self.current_job = job
             self._add_job_(job)
@@ -152,14 +154,13 @@ class OrderGenerator(Generator):
                 self.exist = True
                 return None
             else:
-                print "count",self.count,"round",self.round,"index",self.index
                 ##under this condition, we only works for first job
                 job_maker = self.job_types[0]
                 return self.job_maker_sets[job_maker].make_job(self.index)  
         
 
     def exit(self):
-        self.exist 
+        return self.exist 
             
          
             

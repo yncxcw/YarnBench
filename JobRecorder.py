@@ -268,8 +268,9 @@ class HadoopJobRecorder(JobRecorder):
         return "MAPREDUCE" 
 
     def generate_job_report(self):
-        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+        result =self.exe + "run: "+ str(self.job_finish_time - self.job_start_time)
 
+        return result 
 
     
 class SparkJobRecorder(JobRecorder):
@@ -288,7 +289,8 @@ class SparkJobRecorder(JobRecorder):
         return "SPARK"
 
     def generate_job_report(self):
-        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+        result = self.exe+" run: "+str(self.job_finish_time - self.job_start_time)
+        return result
 
 
 
@@ -304,7 +306,8 @@ class SparkSQLJobRecorder(JobRecorder):
         return "SPARK"
 
     def generate_job_report(self):
-        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
+        result = self.exe+"run: "+str(self.job_finish_time - self.job_start_time)
+        return result
 
 
 class HiBenchJobRecorder(JobRecorder):
@@ -327,8 +330,8 @@ class HiBenchJobRecorder(JobRecorder):
             return "MAPREDUCE"
 
     def generate_job_report(self):
-        return self.exe, "run: ", (self.job_finish_time - self.job_start_time)
-
+        result = self.exe+"run: "+str(self.job_finish_time - self.job_start_time)
+        return result 
 
 
 class MakeJob:
