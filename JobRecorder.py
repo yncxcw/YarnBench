@@ -68,9 +68,6 @@ class JobRecorder:
 
         self.job_command    =None  
         self.job_id         =None
-        self.job_start_time =None
-        self.job_submit_time=None
-        self.job_finish_time=None
         self.job_history    =None
         self.jar            =None
         self.exe            =None
@@ -79,12 +76,8 @@ class JobRecorder:
         self.job_parameters =[]
         self.job_input      =[]
         self.job_output     =None
-        self.job_app_server =None
-        self.start          =False
-        self.finish         =False
         self.queue          =None
         self.LOCAL_JOB_HISTORY="./history"
-        self.job_propertys = {}
         ##make local dir to store job history
         if os.path.exists(self.LOCAL_JOB_HISTORY) is False:
             self.mkdir_local_history()
@@ -99,73 +92,7 @@ class JobRecorder:
 
     def get_type(self):
         return None
-
-
-    ##get job id if it's accepted by RM and mark the job "started" 
-    def wait_job_start(self):
-        id = inc_get_id()
-        query_url=self.JOB_SERVER
-        ##sleep here untill the app is submited to RM
-        time.sleep(10)
-        dict_read=ConfUtils.read_json_url(query_url)
-        if dict_read is None:
-            print "error dict_read"
-            return
-        ##block here untill we find there are some application are running
-        while dict_read["apps"] is None:
-            dict_read=ConfUtils.read_json_url(query_url)
-            continue
-        ##we choose the job whose Startedtime has the minimum defference to the job_submit_time
-        final_app = None
-        ##unit is s
-        minimum   = 1000
-        ##wait untill we get the job with job_id = id
-        print "waiting for submit",id
-        while True:
-            found = False
-            dict_read=ConfUtils.read_json_url(query_url)
-            for app in dict_read["apps"]["app"]:
-                if int(app["id"].split("_")[-1]) == id: 
-                    final_app = app
-                    found = True
-                    break
-            if found is True:
-                break
-               
-        self.job_id=final_app["id"]
-        print "start",self.job_id
-        self.job_start_time=final_app[START]
-        self.job_queue = final_app["queue"] 
-        self.job_app_server=self.JOB_SERVER+"/"+self.job_id
-        self.start = True
-        pass
-
-    def monitor_job(self):
-        if self.job_app_server is None:
-            print "error: job app server is null"
-            return
-        dict_read=ConfUtils.read_json_url(self.job_app_server)["app"]
-        elapse_time = int(dict_read[ELAPSE])
-        if self.job_propertys.get(PROGRESS) is None:
-            self.job_propertys[PROGRESS] = {}
-        self.job_propertys[PROGRESS][elapse_time]=float(dict_read[PROGRESS])
-
-        if self.job_propertys.get(CONTAINER) is None:
-            self.job_propertys[CONTAINER] = {}
-        self.job_propertys[CONTAINER][elapse_time]=int(dict_read[CONTAINER])
-
-        if self.job_propertys.get(MB) is None:
-            self.job_propertys[MB] = {}
-        self.job_propertys[MB][elapse_time]=int(dict_read[MB])
-
-        if self.job_propertys.get(VCORE) is None:
-            self.job_propertys[VCORE] = {}
-        self.job_propertys[VCORE][elapse_time]=int(dict_read[VCORE])
-        if dict_read[STATE] == "FINISHED":
-            self.finish = True
-            self.job_finish_time=int(dict_read[FINISH])
-        pass
-	 
+    
     def mkdir_local_history(self):
 	    os.mkdir(self.LOCAL_JOB_HISTORY)
 
@@ -180,6 +107,8 @@ class JobRecorder:
 
 
     def run_job(self):
+        self.job_id = inc_get_id()
+        print "start job",self.job_id
         run_list = []
         run_list.append(self.JOB_BIN)
         run_list.append(self.job_command)
@@ -202,17 +131,6 @@ class JobRecorder:
                 final_run_list.append(run)
         FNULL=open(os.devnull,'w')
         subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
-        print final_run_list
-        self.job_submit_time=time.time()
-        while self.finish is False:
-            if self.start is False:
-                ##if we get job id, then we mark it "started"
-                self.wait_job_start()
-            else:
-                self.monitor_job()
-                time.sleep(2)
-                continue;
-        print "finish",self.job_id
         #RunHadoop.HDFSDeletePath(self.job_output)
 
     def copy_job_history(self):
@@ -231,22 +149,6 @@ class JobRecorder:
 	        ##copy to local folder
             RunHadoop.HDFSGetPath(self.job_history,self.LOCAL_JOB_HISTORY)
 
-    def set_job_time(self,time):
-	    self.job_time = time
-
-    def set_job_propertys(self,key,value):
-	    self.job_propertys[key]=value
-
-    def get_job_propertys(self,key):
-	    return self.job_propertys[key]
-    
-    def get_job_by_propertys(self,key):
-	    string = self.job_id+"  "+str(self.job_propertys[key])+"  "+str(self.job_time)
-	    return string
-
-    def get_job(self):
-	    string = self.job_id+" "+str(self.job_time)
-	    return string
 	    		
 		
 	
@@ -266,12 +168,6 @@ class HadoopJobRecorder(JobRecorder):
 
     def get_type(self):
         return "MAPREDUCE" 
-
-    def generate_job_report(self):
-        result =self.exe + "run: "+ str(self.job_finish_time - self.job_start_time)
-
-        return result 
-
     
 class SparkJobRecorder(JobRecorder):
 
@@ -288,12 +184,6 @@ class SparkJobRecorder(JobRecorder):
     def get_type(self):
         return "SPARK"
 
-    def generate_job_report(self):
-        result = self.exe+" run: "+str(self.job_finish_time - self.job_start_time)
-        return result
-
-
-
 class SparkSQLJobRecorder(JobRecorder):
 
     def __init__(self, conf, job_home,job_user):
@@ -304,11 +194,6 @@ class SparkSQLJobRecorder(JobRecorder):
 
     def get_type(self):
         return "SPARK"
-
-    def generate_job_report(self):
-        result = self.exe+"run: "+str(self.job_finish_time - self.job_start_time)
-        return result
-
 
 class HiBenchJobRecorder(JobRecorder):
 
@@ -329,11 +214,7 @@ class HiBenchJobRecorder(JobRecorder):
         else:
             return "MAPREDUCE"
 
-    def generate_job_report(self):
-        result = self.exe+"run: "+str(self.job_finish_time - self.job_start_time)
-        return result 
-
-
+    
 class MakeJob:
 
     PREFIX_NAME = None

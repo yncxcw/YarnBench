@@ -23,10 +23,52 @@ TOTALCAP="totalNodeCapacity"
 class QueueMonitor:
 
     def __init__(self,conf):
-        self.conf  = conf
-        self.url   = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
+        self.conf   = conf
+        self.url    = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
+        self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps"
+        ##mapping from the queue to finished jobs
+        self.job_infos={}
+        ##record running job id
+        self.running  =set()
+        ##record finish  job id
+        self.finish   =set() 
 
+    ##return funning job_dicts
+    def get_job_dicts(self):
+        dict_read = ConfUtils.read_json_url(job_url)
+        if dict_read is None:
+            print "error dict_read"
+            return None
+        ##no job has been submitted yet
+        if dict_read["apps"] is None:
+            return None
+        return dict_read["apps"]["app"]
+        
 
+    def monitor_jobs(self):
+        for job_dict in self.get_job_dicts():
+            id    = job_dict["id"]
+            queue = job_dict["queue"]
+            ## we ignore, just continue
+            if id in self.finish:
+                continue
+            ##not finish yet
+            elif id in self.running:
+                job = job_infos[queue].get(id)
+                job.monitor(job_dict)
+                ##if finished, we remove it from running to finish
+                if job.finish is True:
+                    self.running.remove(id)
+                    self.finish.add(id)
+                else:
+                    pass
+            ##it's a new job
+            elif:
+                if self.job_infos.get(queue) is None:
+                    self.job_infos[queue] = {}
+                self.job_infos[queue][id] = JobInfo(id)
+                self.job_infos[queue][id].monitor(job_dict)                
+        pass
     def monitor_queue(self):
         pass
 
