@@ -28,7 +28,8 @@ class SchedulerPlan:
 
         ##monitor queue for the first time
         self.queueMonitor.monitor_queue()
-
+        ##start monitoring thread
+        self.queueMonitor.start()
 
         self.generators = []
         ##try to make generator
@@ -61,7 +62,7 @@ class SchedulerPlan:
         #assert(self.run_time > 100) 
 
         ##whole job set
-        self.jobs = []            
+        self.jobs = JobSet()      
 
 
     def run(self):
@@ -81,23 +82,11 @@ class SchedulerPlan:
                 if new_jobs is None:
                     continue
                 else:
-                    self.jobs += new_jobs 
+                    self.jobs.add_jobs(new_jobs)
             time.sleep(1)
             self.run_time = self.run_time - 1
         print "submit finished"
-        while True:
-            for generator in self.generators:
-                finish = True
-                if generator.is_finished() is False:
-                    finish = False
-            if finish is True:
-                break
-
-        print "finish"
-        for generator in self.generators:
-            generator.generate_reports()
-        
-            
+                    
                  
         
          

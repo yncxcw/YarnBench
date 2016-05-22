@@ -1,7 +1,7 @@
 #!/bin/python
 import time
 import ConfUtils
-
+import threading
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -20,9 +20,10 @@ USENOCAP="usedNodeCapacity"
 AVANOCAP="availNodeCapacity"
 TOTALCAP="totalNodeCapacity"
 
-class QueueMonitor:
+class QueueMonitor(threading.Thread):
 
     def __init__(self,conf):
+        super(QueueMonitor,self).__init__()
         self.conf   = conf
         self.url    = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
         self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps"
@@ -31,7 +32,9 @@ class QueueMonitor:
         ##record running job id
         self.running  =set()
         ##record finish  job id
-        self.finish   =set() 
+        self.finish   =set()
+        ##if the working thread is running 
+        self.running  =False
 
     ##return funning job_dicts
     def get_job_dicts(self):
@@ -43,7 +46,21 @@ class QueueMonitor:
         if dict_read["apps"] is None:
             return None
         return dict_read["apps"]["app"]
-        
+
+    def start(self):
+        self.running = True
+        threading.Thread.start()
+
+    def run(self):
+        while self.running:
+            self.monitor_jobs()
+            slef.monitor_queue()
+            ##sleep for 2 seconds
+            sleep(2)
+
+    def stop(self):
+        self.running = False
+                
 
     def monitor_jobs(self):
         for job_dict in self.get_job_dicts():

@@ -66,8 +66,9 @@ class JobRecorder:
         self.JOB_USER       =job_user
         self.JOB_HOME       =job_home
 
+        self.current_id     =inc_get_id()
         self.job_command    =None  
-        self.job_id         =None
+        self.current_id     =None
         self.job_history    =None
         self.jar            =None
         self.exe            =None
@@ -87,9 +88,7 @@ class JobRecorder:
         self.job_name=self.exe+stamp    
 
 
-    def generate_job_report(self):
-        return
-
+    
     def get_type(self):
         return None
     
@@ -107,8 +106,7 @@ class JobRecorder:
 
 
     def run_job(self):
-        self.job_id = inc_get_id()
-        print "start job",self.job_id
+        print "start job",self.current_id
         run_list = []
         run_list.append(self.JOB_BIN)
         run_list.append(self.job_command)
@@ -141,7 +139,7 @@ class JobRecorder:
             return 1
         else:
             for history in job_historys.strip('\n').split("\n")[-3].strip('\n').split(" ")[-1]:
-                if history.endswith(self.JOB_JOB_HISTORY_ENDING) and self.job_id in history:
+                if history.endswith(self.JOB_JOB_HISTORY_ENDING) and self.current_id in history:
                     self.job_history=history
                     break
                 else:
@@ -317,7 +315,7 @@ class MakeJob:
         return job
         
     
-    def make_job(self,queue):
+    def make_job(self, index):
         pass
 
 
@@ -358,9 +356,7 @@ class HadoopMakeJob(MakeJob):
         job.add_keyvalues("-D","mapreduce.job.queuename="+self.queue) 
         return job
 
-                
-        
-       
+                      
 class SparkMakeJob(MakeJob):
 
     PREFIX_NAME = "spark.jobs"

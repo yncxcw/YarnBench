@@ -21,6 +21,10 @@ class Generator:
         self.job_types      =[]
         self.job_types      += conf.get(self.PREFIX_NAME+".jobs")
         self.job_maker_sets = {}
+        ##count the number of this jobs
+        self.job_count      = 0
+        ##record the index of current jobs(hadoop, spark, sparksql)
+        self.index          =-1
         ##TODO Reflection
         for job in self.job_types:
             if job == "hadoop":
@@ -46,16 +50,8 @@ class Generator:
         self.parameter_service = ConfUtils.ParameterService(conf=self.conf,PREFIX_NAME=self.PREFIX_NAME) 
         ## last time to call generate_request
         self.last        = 0
-        ##job sets
-        self.jobs        = JobSet()
         pass
-    
-    def generate_reports(self):
-        report = self.jobs.generate_job_report()
-        f =open(self.PREFIX_NAME+".report","w")
-        f.write(report)
-        f.close()
-        
+       
     ##return true if generate a new request
     def generate_request(self):
         ##we try to update scheduler
@@ -71,12 +67,8 @@ class Generator:
     def _make_job_(self):
         index = ConfUtils.get_type_ratio(self.job_ratios)
         job_maker = self.job_types[index]
-        return self.job_maker_sets[job_maker].make_job(-1)  
+        return self.job_maker_sets[job_maker].make_job(self.index)  
         
-
-    def _add_job_(self,job):
-        self.jobs.add_job(job)
-
     def _update_(self):
         pass
 
@@ -85,8 +77,6 @@ class Generator:
     def _generage_request_(self):
         pass
 
-    def is_finished(self):
-        return self.jobs.get_job_all_finished() 
         
     
 ##generate request in order
@@ -111,19 +101,19 @@ class OrderGenerator(Generator):
         else:
             self.order = False
 
-        round = self.conf.get(self.PREFIX_NAME+".round")
+        round = self.conf.get(self.PREFIX_NAME+".round")[0]
 
         if round is None:
             self.round = 1    
         else:
-            self.round = int(round[0])
+            self.round = int(round)
 
-        range = self.conf.get(self.PREFIX_NAME+".range")
+        range = self.conf.get(self.PREFIX_NAME+".range")[0]
 
         if range is None:
             self.range = 1
         else:
-            self.range = int(range[0]) 
+            self.range = int(range) 
  
 
     def _generate_request_(self):
@@ -133,10 +123,10 @@ class OrderGenerator(Generator):
                 return None    
             self.last = time.time()
             self.current_job = job
-            self._add_job_(job)
-            jobs=[]
-            jobs.append(job)
-            return jobs 
+            self.job_count = self.job_count + 1
+            new_jobs=[]
+            new_jobs.append(job)
+            return new_jobs 
         else:
             return None
    
@@ -194,12 +184,13 @@ class PoissonGenerator(Generator):
             k+=1
         k=k-1
         ##we do nothing
-        print "this round generate" ,k, "jobs"
-        if k < 1:     return None
+        self.job_count = self.job_count + k
+        #print "this round generate" ,k, "jobs"
+        if k < 1:     
+            return None
         new_jobs = []
         while k > 0:
             job = self._make_job_()
-            self._add_job_(job)
             new_jobs.append(job)
             k-=1
         return new_jobs
@@ -232,10 +223,10 @@ class CapacityGenerator(Generator):
 
         ##try to conmmit job 
         job = self._make_job_()
-        self._add_job_(job)
+        self.job_count = self.job_count + 1
         self.last = time.time()
-        jobs = []
-        jobs.append(job)
-        return jobs 
+        new_jobs = []
+        new_jobs.append(job)
+        return new_jobs 
 
     pass 
