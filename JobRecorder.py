@@ -127,7 +127,7 @@ class JobRecorder:
                 final_run_list.append(run)
         print final_run_list
         FNULL=open(os.devnull,'w')
-        subprocess.call(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
+        return subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
         #RunHadoop.HDFSDeletePath(self.job_output)
 
     def copy_job_history(self):

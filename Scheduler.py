@@ -87,7 +87,12 @@ class SchedulerPlan:
             self.run_time = self.run_time - 1
         print "submit finished"
         self.jobs.wait_to_complete()
-                    
+        print "main thread finished"
+        ##stop monitoring thread
+        self.queueMonitor.stop()
+        print "stop monitoring thread"
+
+           
                  
         
          

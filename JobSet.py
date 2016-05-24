@@ -8,15 +8,14 @@ class JobSet:
 
     def __init__(self):
         self.job_set = {}
-        self.job_thread = []
+        self.job_processes= []
         self.job_all_finished = False
 
 
     def add_jobs(self,jobs):
         for job in jobs:
-            job_thread = Thread(None,job.run_job,None,())
-            self.job_thread.append(job_thread)
-            job_thread.start()
+            job_process = job.run_job()
+            self.job_processes.append(job_process)
             self.job_set[job.current_id]  = job
 
 
@@ -25,8 +24,7 @@ class JobSet:
         pass
         
     def wait_to_complete(self):
-        for athread in self.job_thread:
-            if athread.isAlive:
-                athread.join()        
-        pass
+        for process in self.job_processes:
+            while process.poll() is None:
+                time.sleep(2)
         
