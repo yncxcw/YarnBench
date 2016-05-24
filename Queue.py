@@ -1,7 +1,8 @@
 #!/bin/python
 import time
 import ConfUtils
-import threading
+from JobInfo import JobInfo
+from  threading import Thread
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -20,13 +21,14 @@ USENOCAP="usedNodeCapacity"
 AVANOCAP="availNodeCapacity"
 TOTALCAP="totalNodeCapacity"
 
-class QueueMonitor(threading.Thread):
+class QueueMonitor(Thread):
 
     def __init__(self,conf):
-        super(QueueMonitor,self).__init__()
+        Thread.__init__(self)
         self.conf   = conf
+        self.start_time=str(int(time.time()*1000))
         self.url    = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
-        self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps"
+        self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps?startedTimeBegin="+self.start_time
         ##mapping from the queue to finished jobs
         self.job_infos={}
         ##record running job id
@@ -34,11 +36,11 @@ class QueueMonitor(threading.Thread):
         ##record finish  job id
         self.finish   =set()
         ##if the working thread is running 
-        self.running  =False
+        self.is_running  =False
 
     ##return funning job_dicts
     def get_job_dicts(self):
-        dict_read = ConfUtils.read_json_url(job_url)
+        dict_read = ConfUtils.read_json_url(self.job_url)
         if dict_read is None:
             print "error dict_read"
             return None
@@ -48,22 +50,25 @@ class QueueMonitor(threading.Thread):
         return dict_read["apps"]["app"]
 
     def start(self):
-        self.running = True
-        threading.Thread.start()
+        self.is_running = True
+        Thread.start(self)
 
     def run(self):
-        while self.running:
+        while self.is_running:
             self.monitor_jobs()
-            slef.monitor_queue()
+            self.monitor_queue()
             ##sleep for 2 seconds
-            sleep(2)
+            time.sleep(2)
 
     def stop(self):
-        self.running = False
+        self.is_running = False
                 
 
     def monitor_jobs(self):
-        for job_dict in self.get_job_dicts():
+        job_dicts = self.get_job_dicts()
+        if job_dicts is None:
+            return
+        for job_dict in job_dicts:
             id    = job_dict["id"]
             queue = job_dict["queue"]
             ## we ignore, just continue
@@ -80,7 +85,7 @@ class QueueMonitor(threading.Thread):
                 else:
                     pass
             ##it's a new job
-            elif:
+            else:
                 if self.job_infos.get(queue) is None:
                     self.job_infos[queue] = {}
                 self.job_infos[queue][id] = JobInfo(id)
@@ -156,7 +161,6 @@ class CapacityQueueMonitor(QueueMonitor):
         if child_queues is None:
             ##we find the leaf queue and update queue
             name = root_queue["queueName"]
-            print "queue ",name," update"
             self.update_queue(name,root_queue) 
         ##we traverse its children
         else:

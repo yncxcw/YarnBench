@@ -47,7 +47,6 @@ def inc_get_id():
     with lock:
         job_id = job_id +1
 
-    print "current job id",job_id
     return job_id
 
     
@@ -68,7 +67,6 @@ class JobRecorder:
 
         self.current_id     =inc_get_id()
         self.job_command    =None  
-        self.current_id     =None
         self.job_history    =None
         self.jar            =None
         self.exe            =None
@@ -127,8 +125,9 @@ class JobRecorder:
                 continue
             else:
                 final_run_list.append(run)
+        print final_run_list
         FNULL=open(os.devnull,'w')
-        subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
+        subprocess.call(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
         #RunHadoop.HDFSDeletePath(self.job_output)
 
     def copy_job_history(self):
@@ -229,7 +228,6 @@ class MakeJob:
             raise Exception("jobs can not be null")
        
         self.jobs += conf.get(self.PREFIX_NAME)
-        print self.jobs
 
         if conf.get(self.PREFIX_NAME+".ratios") is None:
             ##equal share

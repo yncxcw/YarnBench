@@ -10,7 +10,7 @@ jobs=hibench
 user=wei
 
 ##run time(s)
-runtime=60000
+runtime=20
 
 hadoop.url = http://localhost:8088
 ##Hadoop Mapreduce job configure, Hadoop generator will randminly pick up one job to run
@@ -45,7 +45,7 @@ sparksql.jobs.keyvalues         = --master:yarn, --jars:/opt/apache-hive-2.0.0-b
 
 
 ##configure for generators
-generators = OrderGenerator
+generators = PoissonGenerator
 
 generator.OrderGenerator.jobs       =sparksql
 generator.OrderGenerator.order      =true
@@ -56,10 +56,10 @@ generator.OrderGenerator.queue      =default
 generator.OrderGenerator.parameters.interval = 20
 #
 
-#generator.PoissonGenerator.jobs=sparksql
-#generator.PoissonGenerator.jobs.ratios=1
-#generator.PoissonGenerator.queue=default
-#generator.PoissonGenerator.parameters.interval=10
+generator.PoissonGenerator.jobs=sparksql
+generator.PoissonGenerator.jobs.ratios=1
+generator.PoissonGenerator.queue=default
+generator.PoissonGenerator.parameters.interval=10
 
  
 ##  generator.CapacityGenerator.jobs      =hibench

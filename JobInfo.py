@@ -21,7 +21,7 @@ class JobInfo:
         self.finish      = False
         self.statics     ={}
 
-    def monitor(self,job_dict):
+    def monitor(self,dict_read):
         elapse_time = int(dict_read[ELAPSE])
         ##record start time
         if self.start_time is None:
@@ -32,21 +32,21 @@ class JobInfo:
         ##record state
         self.state = dict_read[STATE]
         ##record progress with elapse time
-        if self.staticse.get(PROGRESS) is None:
-            self.staticse[PROGRESS] = {}
-        self.staticse[PROGRESS][elapse_time]=float(dict_read[PROGRESS])
+        if self.statics.get(PROGRESS) is None:
+            self.statics[PROGRESS] = {}
+        self.statics[PROGRESS][elapse_time]=float(dict_read[PROGRESS])
         ##record container with elapse time
-        if self.staticse.get(CONTAINER) is None:
-            self.staticse[CONTAINER] = {}
-        self.staticse[CONTAINER][elapse_time]=int(dict_read[CONTAINER])
+        if self.statics.get(CONTAINER) is None:
+            self.statics[CONTAINER] = {}
+        self.statics[CONTAINER][elapse_time]=int(dict_read[CONTAINER])
         ##record memory with elapse time
-        if self.staticse.get(MB) is None:
-            self.staticse[MB] = {}
-        self.staticse[MB][elapse_time]=int(dict_read[MB])
+        if self.statics.get(MB) is None:
+            self.statics[MB] = {}
+        self.statics[MB][elapse_time]=int(dict_read[MB])
         ##record cores with elapse time
-        if self.staticse.get(VCORE) is None:
-            self.staticse[VCORE] = {}
-        self.staticse[VCORE][elapse_time]=int(dict_read[VCORE])
+        if self.statics.get(VCORE) is None:
+            self.statics[VCORE] = {}
+        self.statics[VCORE][elapse_time]=int(dict_read[VCORE])
         ##record finish time
         if dict_read[STATE] == "FINISHED":
             self.finish = True

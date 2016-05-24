@@ -15,7 +15,7 @@ class JobSet:
     def add_jobs(self,jobs):
         for job in jobs:
             job_thread = Thread(None,job.run_job,None,())
-            slef.job_thread.append(job_thread)
+            self.job_thread.append(job_thread)
             job_thread.start()
             self.job_set[job.current_id]  = job
 
@@ -24,6 +24,9 @@ class JobSet:
     def get_job_all_finished(self):
         pass
         
-    def wait_to_completed(self):
+    def wait_to_complete(self):
+        for athread in self.job_thread:
+            if athread.isAlive:
+                athread.join()        
         pass
         

@@ -4,7 +4,7 @@ import Queue
 import Generator
 import time
 import JobRecorder
-
+from JobSet import JobSet
 class SchedulerPlan:
 
     
@@ -86,6 +86,7 @@ class SchedulerPlan:
             time.sleep(1)
             self.run_time = self.run_time - 1
         print "submit finished"
+        self.jobs.wait_to_complete()
                     
                  
         
