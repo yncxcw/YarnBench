@@ -177,7 +177,7 @@ class PoissonGenerator(Generator):
       
         p = 1.0
         k = 0
-        e = math.exp(-1)
+        e = math.exp(-2)
         while p >=e:
             u = random.random()
             p*=u
