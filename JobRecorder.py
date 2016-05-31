@@ -97,7 +97,7 @@ class JobRecorder:
 	    os.rmdir(self.LOCAL_JOB_HISTORY)
 
     def add_parameters(self,parameter):
-        self.job_parameters.add(parameter)
+        self.job_parameters.append(parameter)
 
     def add_keyvalues(self,key,value):
         self.job_keyValues[key]=value
@@ -198,7 +198,8 @@ class HiBenchJobRecorder(JobRecorder):
         JobRecorder.__init__(self,job_home,job_user,conf)
         assert(job_type=="spark" or job_type=="mapreduce")
         self.job_type = job_type
-        self.exe=job_xex
+        ##may cause error here passing more than 2 parameters to run.sh
+        #self.exe=job_exe
         if job_type == "mapreduce":
             self.JOB_BIN = self.JOB_HOME+"/workloads/"+job_exe+"/"+job_type+"/"+"bin/run.sh"
         else:
@@ -451,7 +452,7 @@ class HiBenchMakeJob(MakeJob):
                                   conf     = self.conf
                                   )
         ##random generate output dic
-        job_output = "/output_"+job_exe+"_"+job_type+"_"+str(random.randint(1,1000))
+        job_output = "/output_"+name+"_"+job.job_type+"_"+str(random.randint(1,1000))
         job.add_parameters(job_output)
         job.add_parameters(self.queue) 
         ##we do not have parameters and keyvalues here
