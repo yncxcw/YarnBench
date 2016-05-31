@@ -19,6 +19,7 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+
 if [ $# -eq 1 ]
 then
   OUTPUT_HDFS=$1
@@ -32,14 +33,15 @@ then
 fi
 
 
-enter_bench -queue ${QUEUE_NAME}  JavaSparkWordcount ${workload_root} ${workload_folder}
+enter_bench JavaSparkWordcount ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job org.apache.spark.examples.JavaWordCount $INPUT_HDFS $OUTPUT_HDFS
+echo "$QUEUE_NAME"
+run-spark-job  --queue ${QUEUE_NAME}  org.apache.spark.examples.JavaWordCount  $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

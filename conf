@@ -10,7 +10,7 @@ jobs=hibench
 user=wei
 
 ##run time(s)
-runtime=20
+runtime=100
 
 hadoop.url = http://localhost:8088
 ##Hadoop Mapreduce job configure, Hadoop generator will randminly pick up one job to run
