@@ -452,7 +452,7 @@ class HiBenchMakeJob(MakeJob):
                                   conf     = self.conf
                                   )
         ##random generate output dic
-        job_output = "/output_"+name+"_"+job.job_type+"_"+str(random.randint(1,1000))
+        job_output = "/output_"+name+"_"+job.job_type+"_"+str(random.randint(1,100000))
         job.add_parameters(job_output)
         job.add_parameters(self.queue) 
         ##we do not have parameters and keyvalues here
