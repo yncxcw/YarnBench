@@ -91,6 +91,8 @@ class SchedulerPlan:
         ##stop monitoring thread
         self.queueMonitor.stop()
         print "stop monitoring thread"
+        self.queueMonitor.analysis()
+        print "analysis jobs"
 
            
                  

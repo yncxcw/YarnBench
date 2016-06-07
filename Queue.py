@@ -3,6 +3,7 @@ import time
 import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
+from JobAnalysis import JobAnalysis
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -59,6 +60,12 @@ class QueueMonitor(Thread):
             self.monitor_queue()
             ##sleep for 2 seconds
             time.sleep(2)
+    
+    def analysis(self):
+        ##analysis jobs
+        job_analy = JobAnalysis(self.job_infos)
+        job_analy.analysis()
+        ##TODO analysis queue
 
     def stop(self):
         self.is_running = False
