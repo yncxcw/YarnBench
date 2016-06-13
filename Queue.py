@@ -83,7 +83,7 @@ class QueueMonitor(Thread):
                 continue
             ##not finish yet
             elif id in self.running:
-                job = job_infos[queue].get(id)
+                job = self.job_infos[queue].get(id)
                 job.monitor(job_dict)
                 ##if finished, we remove it from running to finish
                 if job.finish is True:
@@ -96,6 +96,7 @@ class QueueMonitor(Thread):
                 if self.job_infos.get(queue) is None:
                     self.job_infos[queue] = {}
                 self.job_infos[queue][id] = JobInfo(id)
+                self.running.add(id)
                 self.job_infos[queue][id].monitor(job_dict)                
         pass
     def monitor_queue(self):

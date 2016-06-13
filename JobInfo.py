@@ -24,7 +24,7 @@ class JobInfo:
     def monitor(self,dict_read):
         elapse_time = int(dict_read[ELAPSE])
         ##record start time
-        if self.start_time is None:
+        if self.start_time == 0:
             self.start_time = int(dict_read[START])
         ##record run_time if applicable
         if (self.state == "ACCEPTED" or self.state =="SUBMITTED") and (dict_read[STATE]=="RUNNING"):
@@ -50,7 +50,7 @@ class JobInfo:
         ##record finish time
         if dict_read[STATE] == "FINISHED":
             self.finish = True
-            self.job_finish_time=int(dict_read[FINISH])
+            self.finish_time=int(dict_read[FINISH])
         pass
 	 
 

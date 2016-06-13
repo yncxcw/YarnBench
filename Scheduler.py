@@ -88,6 +88,8 @@ class SchedulerPlan:
         print "submit finished"
         self.jobs.wait_to_complete()
         print "main thread finished"
+        ##wait to monitor thread finish
+        time.sleep(10)
         ##stop monitoring thread
         self.queueMonitor.stop()
         print "stop monitoring thread"
