@@ -3,7 +3,7 @@ import time
 import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
-from JobAnalysis import JobAnalysis
+from Analysis import Analysis,AnalysisList
 import Scheduler
 ##for capacity scheduler
 
@@ -67,10 +67,16 @@ class Monitor(Thread):
             time.sleep(2)
     
     def analysis(self):
+        analysis_list = AnalysisList()
         ##analysis jobs
-        job_analy = JobAnalysis(self.job_infos)
-        job_analy.analysis()
-        ##TODO analysis queue
+        job_analy = Analysis.JobAnalysis(self.job_infos)
+        analysis_list.add(job_analy)
+        ##analysis queue(TODO currently we only supportes capacity queue)
+        queue_analy=Analysis.CapacityQueueAnalysis(self.queue_info)
+        analysis_list.add(queue_analy)
+        ##DO analysis here
+        analysis_list.analysis()
+
 
     def stop(self):
         self.is_running = False

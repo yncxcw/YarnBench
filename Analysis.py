@@ -31,6 +31,12 @@ class AnalysisList:
     def __init__(self):
         ##make dir for this run
         self.path = "./logs"
+        if os.path.exists(self.path) is False:
+            os.mkdir(self.path)
+        if os.path.isdir(self.path) is False:
+            ##TODO throw exception here
+            print "./logs must be dir"
+            return
         time_str  ="-".join(datetime.now().split())
         time_str  =time_str.replace(".","-")
         time_str  =time_str.replace(":","-")
