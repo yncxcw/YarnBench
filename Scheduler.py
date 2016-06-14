@@ -1,10 +1,15 @@
 #!/bin/python
 import ConfUtils
-import Queue
+import Monitor
 import Generator
 import time
 import JobRecorder
 from JobSet import JobSet
+
+global START_TIME
+
+START_TIME =time.time() 
+
 class SchedulerPlan:
 
     
@@ -18,18 +23,18 @@ class SchedulerPlan:
         if clusterInfo.get("clusterInfo") is None:
             raise Exception("cluster is not running")         
         ##try to make Queue Monitor objects
-        scheduler_type = Queue.QueueMonitor.get_scheduler_type(self.conf)
+        scheduler_type = Monitor.Monitor.get_scheduler_type(self.conf)
         if  scheduler_type == "capacityScheduler":
-            self.queueMonitor=Queue.CapacityQueueMonitor(self.conf)
+            self.monitor=Monitor.CapacityQueueMonitor(self.conf)
         elif scheduler_type == "fifoScheduler":
-            self.queueMonitor=Queue.FifoQueueMonitor(self.conf)
+            self.monitor=Monitor.FifoQueueMonitor(self.conf)
         else:
             raise Exception("scheduler is not supported")
 
         ##monitor queue for the first time
-        self.queueMonitor.monitor_queue()
+        self.monitor.monitor_queue()
         ##start monitoring thread
-        self.queueMonitor.start()
+        self.monitor.start()
 
         self.generators = []
         ##try to make generator
@@ -42,15 +47,15 @@ class SchedulerPlan:
         ##TODO reflection
         for generator_type in generator_types:
             if generator_type == "OrderGenerator":
-                generator = Generator.OrderGenerator(self.conf,self.queueMonitor)
+                generator = Generator.OrderGenerator(self.conf,self.monitor)
                 ##TODO log
                 print "generator: OderGenerator" 
             elif generator_type == "PoissonGenerator":
-                generator = Generator.PoissonGenerator(self.conf,self.queueMonitor)
+                generator = Generator.PoissonGenerator(self.conf,self.monitor)
                 ##TODO log
                 print "generator: PoissonGenerator"
             elif generator_type == "CapacityGenerator":
-                generator = Generaor.CapacityGenerator(self.conf,self.queueMonitor)
+                generator = Generaor.CapacityGenerator(self.conf,self.monitor)
                 ##TODO log
                 print "generator: CapacityGenerator"
             else:
@@ -91,9 +96,9 @@ class SchedulerPlan:
         ##wait to monitor thread finish
         time.sleep(10)
         ##stop monitoring thread
-        self.queueMonitor.stop()
+        self.monitor.stop()
         print "stop monitoring thread"
-        self.queueMonitor.analysis()
+        self.monitor.analysis()
         print "analysis jobs"
 
            

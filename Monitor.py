@@ -4,6 +4,7 @@ import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
 from JobAnalysis import JobAnalysis
+import Scheduler
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -22,7 +23,7 @@ USENOCAP="usedNodeCapacity"
 AVANOCAP="availNodeCapacity"
 TOTALCAP="totalNodeCapacity"
 
-class QueueMonitor(Thread):
+class Monitor(Thread):
 
     def __init__(self,conf):
         Thread.__init__(self)
@@ -38,6 +39,10 @@ class QueueMonitor(Thread):
         self.finish   =set()
         ##if the working thread is running 
         self.is_running  =False
+        ##queue info
+        self.queue_info={}
+        ##submit info
+        self.submit_info = {}
 
     ##return funning job_dicts
     def get_job_dicts(self):
@@ -69,7 +74,11 @@ class QueueMonitor(Thread):
 
     def stop(self):
         self.is_running = False
-                
+
+    ##to record the submit jobs
+    def monitor_submot(queue,nums):
+        pass
+
 
     def monitor_jobs(self):
         job_dicts = self.get_job_dicts()
@@ -109,11 +118,10 @@ class QueueMonitor(Thread):
         scheduler_type = dict_read["scheduler"]["schedulerInfo"]["type"]
         return scheduler_type
 
-class FifoQueueMonitor(QueueMonitor):
+class FifoQueueMonitor(Monitor):
     
     def __init__(self,conf):
-        QueueMonitor.__init__(self,conf)
-        self.properties = {}
+        Monitor.__init__(self,conf)
 
     def monitor_queue(self):
         dict_read = ConfUtils.read_json_url(self.url)
@@ -123,17 +131,20 @@ class FifoQueueMonitor(QueueMonitor):
             print "only support fifo scheduler"
             return
         root_queue = dict_read["scheduler"]["schedulerInfo"]
-        self.properties[USENOCAP] = root_queue[USENOCAP]
-        self.properties[AVANOCAP] = root_queue[AVANOCAP]
-        self.properties[TOTALCAP] = root_queue[TOTALCAP]
+        self.queue_info[USENOCAP] = root_queue[USENOCAP]
+        self.queue_info[AVANOCAP] = root_queue[AVANOCAP]
+        self.queue_info[TOTALCAP] = root_queue[TOTALCAP]
 
 
-class CapacityQueueMonitor(QueueMonitor):
+class CapacityQueueMonitor(Monitor):
 
 
     def __init__(self,conf):
-        QueueMonitor.__init__(self,conf)
-        self.queue_properties={}
+        Monitor.__init__(self,conf)
+        ##absolute capacity
+        self.abcp = 0
+        ##absolute max capacity
+        self.abmcp= 0
 
 
     ##current we only supports capacity schduler
@@ -149,17 +160,36 @@ class CapacityQueueMonitor(QueueMonitor):
         return
 
     def update_queue(self,queue_name,this_queue):
-        if self.queue_properties.get(queue_name) is None:
-            self.queue_properties[queue_name] = {}
+        ELAPSE = int(time.time() - Scheduler.START_TIME)
+        if self.queue_info.get(queue_name) is None:
+            self.queue_info[queue_name] = {}
 
-        self.queue_properties[queue_name][ABCP]    = float(this_queue[ABCP]   )     
-        self.queue_properties[queue_name][ABMXCP]  = float(this_queue[ABMXCP] )         
-        self.queue_properties[queue_name][ABUSE]   = float(this_queue[ABUSE]  )        
-        self.queue_properties[queue_name][NMAPP]   = float(this_queue[NMAPP]  )         
-        self.queue_properties[queue_name][NMACAPP] = float(this_queue[NMACAPP])     
-        self.queue_properties[queue_name][NMPEAPP] = float(this_queue[NMPEAPP])         
-        self.queue_properties[queue_name][NMCON]   = float(this_queue[NMCON]  )     
-        self.queue_properties[queue_name][USECP]   = float(this_queue[USECP]  )      
+        self.queue_info[queue_name][ABCP] = float(this_queue[ABCP])
+        self.queue_info[queue_name][ABMXCP] = float(this_queue[ABMXCP])
+
+        if self.queue_info[queue_name][ABUSE] is None:
+            self.queue_info[queue_name][ABUSE] = {}
+        self.queue_info[queue_name][ABUSE][ELAPSE] = float(this_queue[ABUSE]))
+
+        if self.queue_info[queue_name][NMAPP] is None:
+            self.queue_info[queue_name][NMAPP] = []
+        self.queue_info[queue_name][NMAPP][ELAPSE] = float(this_queue[NMAPP])
+
+        if self.queue_info[queue_name][NMACAPP] is None:
+            self.queue_info[queue_name][NMACAPP] = []
+        self.queue_info[queue_name][NMACAPP][ELAPSE] = float(this_queue[NMACAPP])
+
+        if self.queue_info[queue_name][NMPEAPP] is None:
+            self.queue_info[queue_name][NMPEAPP] = []
+        self.queue_info[queue_name][NMPEAPP][ELAPSE] = float(this_queue[NMPEAPP])
+
+        if self.queue_info[queue_name][NMCON] is None:
+            self.queue_info[queue_name][NMCON] = []
+        self.queue_info[queue_name][NMCON][ELAPSE] = float(this_queue[NMCON])
+
+        if self.queue_info[queue_name][USECP] is None:
+            self.queue_info[queue_name][USECP] = []
+        self.queue_info[queue_name][USECP][ELAPSE] = float(this_queue[USECP])    
      
 
     
@@ -177,15 +207,15 @@ class CapacityQueueMonitor(QueueMonitor):
 
                   
     def get_queue_property(self,queue,name):
-        if self.queue_properties[queue] is None:
+        if self.queue_info[queue] is None:
             raise Exception("error trying to get wrong queue")
             return None
 
-        if self.queue_properties[queue][name] is None:
+        if self.queue_info[queue][name] is None:
             raise Exception("error trying to get wrong properties")
             return None
 
-        return self.queue_properties[queue][name]
+        return self.queue_info[queue][name]
         
         
                      
