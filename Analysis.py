@@ -37,7 +37,7 @@ class AnalysisList:
             ##TODO throw exception here
             print "./logs must be dir"
             return
-        time_str  ="-".join(datetime.now().split())
+        time_str  ="-".join(str(datetime.now()).split())
         time_str  =time_str.replace(".","-")
         time_str  =time_str.replace(":","-")
         self.path =self.path+"/"+time_str
@@ -51,7 +51,7 @@ class AnalysisList:
         self.analysis_list.append(analysis)
 
     def analysis(self):
-        for analysis in analysis_list:
+        for analysis in self.analysis_list:
             analysis.analysis()
 
 
@@ -70,8 +70,7 @@ class JobAnalysis(Analysis):
         ##we devide jobs into different queues
         for queue in self.job_infos.keys():
             ##each queue has its own job log file
-            log = open(self.path+"/job_"+queue+".log","w")
-            self.log.write("=========queue: "+queue+"=======\n")
+            log = open(self.path+"/job_"+queue+".csv","w")
             ##mapping from id to jobinfo
             jobs = self.job_infos.get(queue)
             job_list = []
@@ -84,7 +83,7 @@ class JobAnalysis(Analysis):
             for job in job_list:
                 queue_time = (job.run_time - job.start_time)/1000
                 run_time   = (job.finish_time - job.run_time)/1000
-                log.write(job.job_id+"  "+str(queue_time)+"  "+str(run_time)+"\n")
+                log.write(job.job_id+","+str(queue_time)+","+str(run_time)+"\n")
             log.close()
 
 
@@ -103,11 +102,17 @@ class CapacityQueueAnalysis(Analysis):
             queue_map = self.queue_infos.get(queue)
             ##iterate for property
             for property in queue_map.keys():
-                log = open(self.path+"/queue_"+queue+"_"+property+".loog")
+                log = open(self.path+"/queue_"+queue+"_"+property+".csv","w")
                 time_value = queue_map[property]
-                key_list   = time_value.keys().sort()
-                for time in key_list:
-                    log.write(key+"   "+time_value[time]+"\n")
+                if type(time_value) is dict:
+                    key_list   = sorted(time_value.keys())
+                    for time in key_list:
+                        log.write(str(time)+","+str(time_value[time])+"\n")
+                elif type(time_value) is list:
+                    for value in time_value:
+                        log.write(str(value)+"\n")
+                else:
+                    log.write(str(time_value)+"\n")
                 log.close()
 
 

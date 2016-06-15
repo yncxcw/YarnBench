@@ -3,7 +3,7 @@ import time
 import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
-from Analysis import Analysis,AnalysisList
+from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis
 import Scheduler
 ##for capacity scheduler
 
@@ -69,10 +69,10 @@ class Monitor(Thread):
     def analysis(self):
         analysis_list = AnalysisList()
         ##analysis jobs
-        job_analy = Analysis.JobAnalysis(self.job_infos)
+        job_analy = JobAnalysis(self.job_infos)
         analysis_list.add(job_analy)
         ##analysis queue(TODO currently we only supportes capacity queue)
-        queue_analy=Analysis.CapacityQueueAnalysis(self.queue_info)
+        queue_analy=CapacityQueueAnalysis(self.queue_info)
         analysis_list.add(queue_analy)
         ##DO analysis here
         analysis_list.analysis()
@@ -173,28 +173,28 @@ class CapacityQueueMonitor(Monitor):
         self.queue_info[queue_name][ABCP] = float(this_queue[ABCP])
         self.queue_info[queue_name][ABMXCP] = float(this_queue[ABMXCP])
 
-        if self.queue_info[queue_name][ABUSE] is None:
+        if self.queue_info[queue_name].get(ABUSE) is None:
             self.queue_info[queue_name][ABUSE] = {}
-        self.queue_info[queue_name][ABUSE][ELAPSE] = float(this_queue[ABUSE]))
+        self.queue_info[queue_name][ABUSE][ELAPSE] = float(this_queue[ABUSE])
 
-        if self.queue_info[queue_name][NMAPP] is None:
-            self.queue_info[queue_name][NMAPP] = []
+        if self.queue_info[queue_name].get(NMAPP) is None:
+            self.queue_info[queue_name][NMAPP] = {}
         self.queue_info[queue_name][NMAPP][ELAPSE] = float(this_queue[NMAPP])
 
-        if self.queue_info[queue_name][NMACAPP] is None:
-            self.queue_info[queue_name][NMACAPP] = []
+        if self.queue_info[queue_name].get(NMACAPP) is None:
+            self.queue_info[queue_name][NMACAPP] = {}
         self.queue_info[queue_name][NMACAPP][ELAPSE] = float(this_queue[NMACAPP])
 
-        if self.queue_info[queue_name][NMPEAPP] is None:
-            self.queue_info[queue_name][NMPEAPP] = []
+        if self.queue_info[queue_name].get(NMPEAPP) is None:
+            self.queue_info[queue_name][NMPEAPP] = {}
         self.queue_info[queue_name][NMPEAPP][ELAPSE] = float(this_queue[NMPEAPP])
 
-        if self.queue_info[queue_name][NMCON] is None:
-            self.queue_info[queue_name][NMCON] = []
+        if self.queue_info[queue_name].get(NMCON) is None:
+            self.queue_info[queue_name][NMCON] = {}
         self.queue_info[queue_name][NMCON][ELAPSE] = float(this_queue[NMCON])
 
-        if self.queue_info[queue_name][USECP] is None:
-            self.queue_info[queue_name][USECP] = []
+        if self.queue_info[queue_name].get(USECP) is None:
+            self.queue_info[queue_name][USECP] = {}
         self.queue_info[queue_name][USECP][ELAPSE] = float(this_queue[USECP])    
      
 
