@@ -126,7 +126,9 @@ class JobRecorder:
             else:
                 final_run_list.append(run)
         print final_run_list
-        FNULL=open(os.devnull,'w')
+        #FNULL=open(os.devnull,'w')
+        FNULL=open("temp.log",'w')
+
         return subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
         #RunHadoop.HDFSDeletePath(self.job_output)
 

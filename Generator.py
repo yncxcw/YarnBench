@@ -177,12 +177,14 @@ class PoissonGenerator(Generator):
       
         p = 1.0
         k = 0
-        e = math.exp(-1)
+        e = math.exp(-5)
         while p >=e:
             u = random.random()
             p*=u
             k+=1
         k=k-1
+        ##static enabled
+        k=6
         ##we do nothing
         self.job_count = self.job_count + k
         print "this round generate" ,k, "jobs"

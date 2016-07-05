@@ -28,6 +28,11 @@ show_bannar start
 
 
 rmr-hdfs ${INPUT_HDFS} || true
+
+echo $BAYES_BASE_HDFS
+
+echo $BAYES_INPUT
+
 START_TIME=`timestamp`
 OPTION="-t bayes \
         -b ${BAYES_BASE_HDFS} \
