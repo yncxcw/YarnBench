@@ -65,6 +65,7 @@ class JobRecorder:
         self.JOB_USER       =job_user
         self.JOB_HOME       =job_home
 
+        self.job_process    =None
         self.current_id     =inc_get_id()
         self.job_command    =None  
         self.job_history    =None
@@ -103,6 +104,12 @@ class JobRecorder:
         self.job_keyValues[key]=value
 
 
+    def is_finish(self):
+        if self.job_process.poll() is None:
+            return False
+        else:
+            return True
+
     def run_job(self):
         print "start job",self.current_id
         run_list = []
@@ -126,10 +133,11 @@ class JobRecorder:
             else:
                 final_run_list.append(run)
         print final_run_list
-        #FNULL=open(os.devnull,'w')
-        FNULL=open("temp.log",'w')
+        FNULL=open(os.devnull,'w')
+        #FNULL=open("temp.log",'w')
 
-        return subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT)
+        self.job_process = subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT) 
+        return None
         #RunHadoop.HDFSDeletePath(self.job_output)
 
     def copy_job_history(self):

@@ -117,7 +117,7 @@ class OrderGenerator(Generator):
  
 
     def _generate_request_(self):
-        if self.current_job is None or self.current_job.finish is True:
+        if self.current_job is None or self.current_job.is_finish() is True:
             job=self._make_job_()
             if job is None:
                 return None    
@@ -177,14 +177,14 @@ class PoissonGenerator(Generator):
       
         p = 1.0
         k = 0
-        e = math.exp(-5)
+        e = math.exp(-6)
         while p >=e:
             u = random.random()
             p*=u
             k+=1
         k=k-1
         ##static enabled
-        k=6
+        #k=12
         ##we do nothing
         self.job_count = self.job_count + k
         print "this round generate" ,k, "jobs"
