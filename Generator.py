@@ -9,7 +9,6 @@ import random
 
 class Generator:
 
-    self.PREFIX_NAME=None
     ##a generator can only submit job one queue
     def __init__(self,prefix,conf,queueMonitor):
         if prefix is not None:
@@ -87,8 +86,8 @@ class Generator:
 class OrderGenerator(Generator):
 
     
-    def __init__(self,conf,queueMonitor):
-        Generator.__init__(self,conf,queueMonitor)
+    def __init__(self,prefix,conf,queueMonitor):
+        Generator.__init__(self,prefix,conf,queueMonitor)
         self.current_job = None
         self.count = 0
         self.index = 0
@@ -161,8 +160,8 @@ class OrderGenerator(Generator):
 class PoissonGenerator(Generator):
 
    
-    def __init__(self,conf,queueMonitor):
-        Generator.__init__(self,conf,queueMonitor)
+    def __init__(self,prefix,conf,queueMonitor):
+        Generator.__init__(self,prefix,conf,queueMonitor)
         ## how long(s) we need to check if we need to submit a job
         self.interval = self.parameter_service.get_parameter("interval")
 
@@ -179,7 +178,7 @@ class PoissonGenerator(Generator):
       
         p = 1.0
         k = 0
-        e = math.exp(-6)
+        e = math.exp(-2)
         while p >=e:
             u = random.random()
             p*=u
@@ -203,8 +202,8 @@ class PoissonGenerator(Generator):
 class CapacityGenerator(Generator):
     
 
-    def __init__(self,conf,queueMonitor):
-        Generator.__init__(conf,queueMonitor)
+    def __init__(self,prefix,conf,queueMonitor):
+        Generator.__init__(prefix,conf,queueMonitor)
         ## we wait 10s to make our new submition effectively occupy the cluster resource
         self.interval       = 10
         self.usedCapacity   = self.parameter_service.get_parameter("usedCapacity")
