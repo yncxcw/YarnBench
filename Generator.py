@@ -164,10 +164,14 @@ class PoissonGenerator(Generator):
         Generator.__init__(self,prefix,conf,queueMonitor)
         ## how long(s) we need to check if we need to submit a job
         self.interval = self.parameter_service.get_parameter("interval")
+        ## means for poisson distribution
+        self.mean     = self.parameter_service.get_parametner("mean")
 
 
     def _update_(self):
         self.interval = self.parameter_service.get_parameter("interval")
+        self.mean     = self.parameter_service.get_parametner("mean")
+
 
     def _generate_request_(self):
         ##if we reach the interval to schedule
@@ -175,7 +179,8 @@ class PoissonGenerator(Generator):
             return None
 
         self.last = time.time()
-      
+        
+        m = self.mean
         p = 1.0
         k = 0
         e = math.exp(-2)

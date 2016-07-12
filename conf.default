@@ -10,11 +10,7 @@ jobs=hibench
 user=admin
 
 ##run time(s)
-<<<<<<< HEAD:conf
 runtime=300
-=======
-runtime=100
->>>>>>> 176b4ed2347945c889bec6c1b906da0f028dfcc6:conf.default
 
 hadoop.url = http://localhost:8088
 ##Hadoop Mapreduce job configure, Hadoop generator will randminly pick up one job to run
@@ -71,11 +67,13 @@ generator.PoissonGenerator1.jobs=sparksql
 generator.PoissonGenerator1.jobs.ratios=1
 generator.PoissonGenerator1.queue=default
 generator.PoissonGenerator1.parameters.interval=1
+generator.PoissonGenerator1.parameters.mean = 1
 
 generator.PoissonGenerator2.jobs=sparksql
 generator.PoissonGenerator2.jobs.ratios=1
 generator.PoissonGenerator2.queue=default
 generator.PoissonGenerator2.parameters.interval=1
+generator.PoissonGenerator1.parameters.mean = 1
 
 
 ##  generator.CapacityGenerator.jobs      =hibench
