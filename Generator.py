@@ -9,9 +9,13 @@ import random
 
 class Generator:
 
-    PREFIX_NAME=None
+    self.PREFIX_NAME=None
     ##a generator can only submit job one queue
-    def __init__(self,conf,queueMonitor):
+    def __init__(self,prefix,conf,queueMonitor):
+        if prefix is not None:
+            self.PREFIX_NAME = "generator."+prefix
+        else:
+            print "prefix is none"
         self.conf           = conf
         if conf.get(self.PREFIX_NAME+".queue") is None:
             self.queue = "default"
@@ -28,7 +32,7 @@ class Generator:
         ##TODO Reflection
         for job in self.job_types:
             if job == "hadoop":
-                job_maker = JobRecorder.HadoopMakeJob(conf,self,queue)                 
+                job_maker = JobRecorder.HadoopMakeJob(conf,self.queue)                 
             elif job == "spark":
                 job_maker = JobRecorder.SparkMakeJob(conf,self.queue)
             elif job == "sparksql":
@@ -82,8 +86,7 @@ class Generator:
 ##generate request in order
 class OrderGenerator(Generator):
 
-    PREFIX_NAME = "generator.OrderGenerator"
-
+    
     def __init__(self,conf,queueMonitor):
         Generator.__init__(self,conf,queueMonitor)
         self.current_job = None
@@ -157,8 +160,7 @@ class OrderGenerator(Generator):
 ##generate request in Poisson distribution       
 class PoissonGenerator(Generator):
 
-    PREFIX_NAME = "generator.PoissonGenerator"
-
+   
     def __init__(self,conf,queueMonitor):
         Generator.__init__(self,conf,queueMonitor)
         ## how long(s) we need to check if we need to submit a job
@@ -200,7 +202,6 @@ class PoissonGenerator(Generator):
 ##generate request in to match the capacity that user set
 class CapacityGenerator(Generator):
     
-    PREFIX_NAME = "generator.CapacityGenerator"
 
     def __init__(self,conf,queueMonitor):
         Generator.__init__(conf,queueMonitor)

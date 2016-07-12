@@ -46,16 +46,16 @@ class SchedulerPlan:
 
         ##TODO reflection
         for generator_type in generator_types:
-            if generator_type == "OrderGenerator":
-                generator = Generator.OrderGenerator(self.conf,self.monitor)
+            if generator_type.startswith("OrderGenerator"):
+                generator = Generator.OrderGenerator(generator_type,self.conf,self.monitor)
                 ##TODO log
                 print "generator: OderGenerator" 
-            elif generator_type == "PoissonGenerator":
-                generator = Generator.PoissonGenerator(self.conf,self.monitor)
+            elif generator_type.startswith("PoissonGenerator"):
+                generator = Generator.PoissonGenerator(generator_type,self.conf,self.monitor)
                 ##TODO log
                 print "generator: PoissonGenerator"
-            elif generator_type == "CapacityGenerator":
-                generator = Generaor.CapacityGenerator(self.conf,self.monitor)
+            elif generator_type.startswith("CapacityGenerator"):
+                generator = Generaor.CapacityGenerator(generator_type,self.conf,self.monitor)
                 ##TODO log
                 print "generator: CapacityGenerator"
             else:
