@@ -178,9 +178,12 @@ class ParameterSlice:
 def read_json_url(url):
         dict_read = {}
         try:
-            dict_read = json.loads(urllib2.urlopen(url).read())
+            response  = urllib2.urlopen(url)
+            dict_read = json.loads(response.read())
         except Exception as exceptMessage:
             print "read url error",exceptMessage
+        finally:
+            response.close()
         return dict_read    
 
 

@@ -165,12 +165,12 @@ class PoissonGenerator(Generator):
         ## how long(s) we need to check if we need to submit a job
         self.interval = self.parameter_service.get_parameter("interval")
         ## means for poisson distribution
-        self.mean     = self.parameter_service.get_parametner("mean")
+        self.mean     = self.parameter_service.get_parameter("mean")
 
 
     def _update_(self):
         self.interval = self.parameter_service.get_parameter("interval")
-        self.mean     = self.parameter_service.get_parametner("mean")
+        self.mean     = self.parameter_service.get_parameter("mean")
 
 
     def _generate_request_(self):
@@ -183,7 +183,7 @@ class PoissonGenerator(Generator):
         m = self.mean
         p = 1.0
         k = 0
-        e = math.exp(-2)
+        e = math.exp(-m)
         while p >=e:
             u = random.random()
             p*=u
