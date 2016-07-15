@@ -157,6 +157,8 @@ class ParameterSlice:
                 raise Exception("illegale parameter negtive value")
             new_term=(time,value)
             self.slices.append(new_term)
+        ini_term =(0,self.initial)
+        self.slices.append(ini_term)
         ###sort based on time
         self.slices.sort(key=itemgetter(1))
 
@@ -166,7 +168,8 @@ class ParameterSlice:
         ##compute progress
         progress = (time.time() - start_time) * 1.0 / run_time
         
-        if progress > self.slices[self.current_slice][0]:
+        if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:
+            print "current slice: ",self.current_slice
             self.current_slice = self.current_slice + 1
         
         return self.slices[self.current_slice][1]
