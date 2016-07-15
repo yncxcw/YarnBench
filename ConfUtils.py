@@ -166,7 +166,7 @@ class ParameterSlice:
             return self.initial
         ##compute progress
         global START_TIME
-        progress = (time.time() - START_TIME) * 1.0 / run_time
+        progress = (time.time() - START_TIME) * 1.0 / self.run_time
         
         if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:
             print "current slice: ",self.current_slice
