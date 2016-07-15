@@ -8,9 +8,9 @@ import time
 
 from operator import itemgetter
 
-global start_time
+global START_TIME
 
-start_time = time.time()
+START_TIME = time.time()
 
 class Configure:
 
@@ -165,8 +165,8 @@ class ParameterSlice:
         if self.mult_slice is False:
             return self.initial
         ##compute progress
-        global start_time
-        progress = (time.time() - start_time) * 1.0 / run_time
+        global START_TIME
+        progress = (time.time() - START_TIME) * 1.0 / run_time
         
         if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:
             print "current slice: ",self.current_slice

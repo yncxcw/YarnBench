@@ -4,7 +4,6 @@ import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
 from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis
-import Scheduler
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -166,7 +165,7 @@ class CapacityQueueMonitor(Monitor):
         return
 
     def update_queue(self,queue_name,this_queue):
-        ELAPSE = int(time.time() - Scheduler.START_TIME)
+        ELAPSE = int(time.time() - ConfUtils.START_TIME)
         if self.queue_info.get(queue_name) is None:
             self.queue_info[queue_name] = {}
 
