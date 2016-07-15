@@ -10,8 +10,7 @@ from operator import itemgetter
 
 global start_time
 
-def _init_everything_():
-    start_time = time.time()
+start_time = time.time()
 
 class Configure:
 
@@ -129,7 +128,7 @@ class ParameterService:
 class ParameterSlice:
 
     ##slice format should be:
-    ##5:0.1, 10,0.2,20:0.3 which means at the 10 perfcent of execution time, values turned to be 5
+    ##0.1:5, 0.2:10,0.3:20 which means at the 10 perfcent of execution time, values turned to be 5
     def __init__(self,name,value,run_time,slices_new=None):
         assert(name  is not None)
         assert(value is not None)
@@ -166,6 +165,7 @@ class ParameterSlice:
         if self.mult_slice is False:
             return self.initial
         ##compute progress
+        global start_time
         progress = (time.time() - start_time) * 1.0 / run_time
         
         if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:

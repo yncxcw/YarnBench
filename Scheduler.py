@@ -6,9 +6,6 @@ import time
 import JobRecorder
 from JobSet import JobSet
 
-global START_TIME
-
-START_TIME =time.time() 
 
 class SchedulerPlan:
 
