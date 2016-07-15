@@ -190,10 +190,10 @@ class PoissonGenerator(Generator):
             k+=1
         k=k-1
         ##static enabled
-        #k=12
+        k=m
         ##we do nothing
         self.job_count = self.job_count + k
-        print "this round generate" ,k, "jobs, means", m
+        print "this round generate" ,k, "jobs"
         if k < 1:     
             return None
         new_jobs = []

@@ -171,8 +171,6 @@ class ParameterSlice:
         if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:
             self.current_slice = self.current_slice + 1
         
-        print "current slice: ",self.current_slice, " current value: ", self.slices[self.current_slice][1]
-
         return self.slices[self.current_slice][1]
   
  
