@@ -148,7 +148,7 @@ class ParameterSlice:
         if slices_new is None:
             self.mult_slice = False
             return
-        for term in slices_new.split(","):
+        for term in slices_new:
             time   = float(term.split(":")[0])
             if time < 0 or time > 1:
                 raise Exception("illegale parameter negtive value or larger than 1")
