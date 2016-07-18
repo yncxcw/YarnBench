@@ -160,9 +160,6 @@ class ParameterSlice:
         self.slices.append(ini_term)
         ###sort based on time
         self.slices.sort(key=itemgetter(0))
-        ##for debug
-        for slice in self.slices:
-            print slice
 
     def get_current_value(self):
         if self.mult_slice is False:
@@ -174,8 +171,6 @@ class ParameterSlice:
         if self.current_slice < len(self.slices) - 1 and progress > self.slices[self.current_slice+1][0]:
             self.current_slice = self.current_slice + 1
 
-        ##for debug
-        print self.current_slice,self.slices[self.current_slice][1]
         return self.slices[self.current_slice][1]
   
  
