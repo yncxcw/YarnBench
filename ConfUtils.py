@@ -159,7 +159,7 @@ class ParameterSlice:
         ini_term =(0,self.initial)
         self.slices.append(ini_term)
         ###sort based on time
-        self.slices.sort(key=itemgetter(1))
+        self.slices.sort(key=itemgetter(0))
         ##for debug
         for slice in self.slices:
             print slice
