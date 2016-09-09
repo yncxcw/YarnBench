@@ -20,6 +20,11 @@ class Generator:
             self.queue = "default"
         else:
             self.queue = conf.get(self.PREFIX_NAME+".queue")[0]
+        ##sync time for each requests
+        if conf.get(self.PREFIX_NAME+".sync") is None:    
+            self.sync       = 0
+        else:
+            self.sync       = int(conf.get(self.PREFIX_NAME+".sync")[0])
         self.queueMonitor   = queueMonitor
         self.job_types      =[]
         self.job_types      += conf.get(self.PREFIX_NAME+".jobs")
@@ -128,9 +133,9 @@ class OrderGenerator(Generator):
             self.job_count = self.job_count + 1
             new_jobs=[]
             new_jobs.append(job)
-            return new_jobs 
+            return new_jobs,0 
         else:
-            return None
+            return None,0
    
     def _make_job_(self):
         if self.order is False:
@@ -168,7 +173,6 @@ class PoissonGenerator(Generator):
         self.mean     = self.parameter_service.get_parameter("mean")
         
 
-
     def _update_(self):
         self.interval = self.parameter_service.get_parameter("interval")
         self.mean     = self.parameter_service.get_parameter("mean")
@@ -202,7 +206,7 @@ class PoissonGenerator(Generator):
             job = self._make_job_()
             new_jobs.append(job)
             k-=1
-        return new_jobs
+        return new_jobs,self.sync
 
 ##generate request in to match the capacity that user set
 class CapacityGenerator(Generator):
@@ -235,6 +239,6 @@ class CapacityGenerator(Generator):
         self.last = time.time()
         new_jobs = []
         new_jobs.append(job)
-        return new_jobs 
+        return new_jobs,0 
 
     pass 

@@ -12,9 +12,10 @@ class JobSet:
         self.job_all_finished = False
 
 
-    def add_jobs(self,jobs):
+    def add_jobs(self,jobs,sync):
         for job in jobs:
-            time.sleep(5)
+            if sync != 0:
+                time.sleep(sync)
             job.run_job()
             self.jobs.append(job)
             self.job_set[job.current_id]  = job

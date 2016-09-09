@@ -79,12 +79,12 @@ class SchedulerPlan:
                 if generator.exit() is True:
                     generator_exist = True
                     break 
-                new_jobs = generator.generate_request()
+                new_jobs,sync = generator.generate_request()
                 ##store new jobs
                 if new_jobs is None:
                     continue
                 else:
-                    self.jobs.add_jobs(new_jobs)
+                    self.jobs.add_jobs(new_jobs,sync)
             time.sleep(1)
             self.run_time = self.run_time - 1
         print "submit finished"
