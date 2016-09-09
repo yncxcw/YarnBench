@@ -181,7 +181,7 @@ class PoissonGenerator(Generator):
     def _generate_request_(self):
         ##if we reach the interval to schedule
         if time.time() - self.last < self.interval:
-            return None
+            return None,0
 
         self.last = time.time()
         
@@ -200,7 +200,7 @@ class PoissonGenerator(Generator):
         self.job_count = self.job_count + k
         print "this round generate" ,k, "jobs"
         if k < 1:     
-            return None
+            return None,0
         new_jobs = []
         while k > 0:
             job = self._make_job_()
@@ -228,10 +228,10 @@ class CapacityGenerator(Generator):
         target = int(self.get_queue_property(slef.queue,self.capacity_key))
         ##target achieved
         if target >= self.usedCapacity:
-            return None
+            return None,0
         ##check time interval in case of over conmmitting
         if time.time() - self.last < self.interval:
-            return None
+            return None,0
 
         ##try to conmmit job 
         job = self._make_job_()
