@@ -166,6 +166,15 @@ class PoissonGenerator(Generator):
         self.interval = self.parameter_service.get_parameter("interval")
         ## means for poisson distribution
         self.mean     = self.parameter_service.get_parameter("mean")
+        ##if simultaneous submit
+        simul         = self.conf.get(self.PREFIX_NAME+".order")
+        if simul[0] is None:
+            self.simul = False
+        elif simul[0] == "false":
+            self.simul =False
+        else:
+            self.simul = True
+
 
 
     def _update_(self):

@@ -71,6 +71,7 @@ generator.PoissonGenerator1.parameters.mean = 1
 
 generator.PoissonGenerator2.jobs=sparksql
 generator.PoissonGenerator2.jobs.ratios=1
+generator.PoissonGenerator2.simul=false
 generator.PoissonGenerator2.queue=default
 generator.PoissonGenerator2.parameters.interval=1
 generator.PoissonGenerator1.parameters.mean = 1
