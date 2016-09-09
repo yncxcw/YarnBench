@@ -135,8 +135,10 @@ class JobRecorder:
         #print final_run_list
         #FNULL=open(os.devnull,'w')
         index = random.randint(1,1000)
-        FNULL=open("temp"+str(index),'w')
+        FNULL=open("./test/temp_"+str(index),'w')
 
+        print index
+        print final_run_list
         self.job_process = subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT) 
         return None
         #RunHadoop.HDFSDeletePath(self.job_output)

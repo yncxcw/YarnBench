@@ -14,6 +14,7 @@ class JobSet:
 
     def add_jobs(self,jobs):
         for job in jobs:
+            time.sleep(5)
             job.run_job()
             self.jobs.append(job)
             self.job_set[job.current_id]  = job
