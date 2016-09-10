@@ -183,6 +183,7 @@ class PoissonGenerator(Generator):
         if time.time() - self.last < self.interval:
             return None,0
 
+
         self.last = time.time()
         
         m = self.mean
