@@ -134,7 +134,7 @@ class JobRecorder:
                 final_run_list.append(run)
         #print final_run_list
         #FNULL=open(os.devnull,'w')
-        index = random.randint(1,1000)
+        index = random.randint(1,1000000)
         print index
         FNULL=open("./test/temp_"+str(index),'w')
 
