@@ -209,6 +209,40 @@ class PoissonGenerator(Generator):
             k-=1
         return new_jobs,self.sync
 
+
+class TraceGenerator(Generator):
+
+    def __init__(self,prefix,conf,queueMonitor):
+        Generator.__init__(self,prefix,conf,queueMonitor)
+        self.ftrace = self.conf.get(self.PREFIX_NAME+".ftrace")[0]
+        f=open(self.ftrace,"w")
+        self.times=[]
+        ##each line is a time
+        for line in f.readlines():
+            self.times.append(int(line.strip()))
+        ##record current execution
+        self.index=0
+        self.start=time.time()
+
+    def _generate_request_(self):
+        current=time.time()-self.start
+        k=0
+        while self.time[self.index]<=current:
+            self.index=self.index+1
+            k=k+1
+        print "this round generates",k,"jobs"
+        if k<1:
+            return None,0
+        while k > 0:
+            job = self._make_job_()
+            new_jobs.append(job)
+            k-=1
+        return new_jobs,self.sync
+
+
+
+
+
 ##generate request in to match the capacity that user set
 class CapacityGenerator(Generator):
     

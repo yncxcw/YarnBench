@@ -52,9 +52,12 @@ class SchedulerPlan:
                 ##TODO log
                 print "generator: PoissonGenerator"
             elif generator_type.startswith("CapacityGenerator"):
-                generator = Generaor.CapacityGenerator(generator_type,self.conf,self.monitor)
+                generator = Generator.CapacityGenerator(generator_type,self.conf,self.monitor)
                 ##TODO log
                 print "generator: CapacityGenerator"
+            elif generator_type.startswith("TraceGenerator"):
+                generator = Generator.TraceGenerator(generator_type,self.conf,self.monitor)
+                print "generator: TraceGenerator"
             else:
                 raise Exception("unknown generator")
             self.generators.append(generator)
