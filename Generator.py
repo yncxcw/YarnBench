@@ -215,22 +215,31 @@ class TraceGenerator(Generator):
     def __init__(self,prefix,conf,queueMonitor):
         Generator.__init__(self,prefix,conf,queueMonitor)
         self.ftrace = self.conf.get(self.PREFIX_NAME+".ftrace")[0]
-        f=open(self.ftrace,"w")
+        f=open(self.ftrace,"r")
         self.times=[]
         ##each line is a time
         for line in f.readlines():
             self.times.append(int(line.strip()))
         ##record current execution
-        self.index=0
+        self.num=0
+        self.finish=False;
         self.start=time.time()
 
     def _generate_request_(self):
+        if self.finish:
+            return None,0
         current=time.time()-self.start
         k=0
-        while self.time[self.index]<=current:
-            self.index=self.index+1
+        while self.times[self.num]<=current:
+            print self.times[self.num]
+            self.num=self.num+1
             k=k+1
-        print "this round generates",k,"jobs"
+            if self.num>=len(self.times):
+                self.finish=True
+                break
+        print self.PREFIX_NAME
+        print "this round generates",k,"jobs current:",current
+        new_jobs=[]
         if k<1:
             return None,0
         while k > 0:
