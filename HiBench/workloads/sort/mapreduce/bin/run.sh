@@ -38,7 +38,7 @@ fi
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} sort -D mapreduce.job.queuename=${QUEUE_NAME} ${COMPRESS_OPT} -outKey org.apache.hadoop.io.Text -outValue org.apache.hadoop.io.Text -r 20 ${INPUT_HDFS} ${OUTPUT_HDFS} 
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} sort -D mapreduce.job.queuename=${QUEUE_NAME} ${COMPRESS_OPT} -outKey org.apache.hadoop.io.Text -outValue org.apache.hadoop.io.Text -r 300 ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
