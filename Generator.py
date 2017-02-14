@@ -72,10 +72,13 @@ class Generator:
         return False
 
     ##make a job from job_types 
-    def _make_job_(self):
-        index = ConfUtils.get_type_ratio(self.job_ratios)
-        job_maker = self.job_types[index]
-        return self.job_maker_sets[job_maker].make_job(self.index)  
+    def _make_job_(self,job=None,index=None):
+        if job:
+            job_maker = self.job_types[job]
+        else: 
+            index = ConfUtils.get_type_ratio(self.job_ratios)
+            job_maker = self.job_types[index]
+        return self.job_maker_sets[job_maker].make_job(index)  
         
     def _update_(self):
         pass
@@ -212,6 +215,10 @@ class PoissonGenerator(Generator):
 
 class TraceGenerator(Generator):
 
+
+    ##e.g. for input file
+    ##100  spark.5      submit(5th spark job at 100th s)  
+    ##105  HiBench.10   submit(10th HiBench job at 105th s)
     def __init__(self,prefix,conf,queueMonitor):
         Generator.__init__(self,prefix,conf,queueMonitor)
         self.ftrace = self.conf.get(self.PREFIX_NAME+".ftrace")[0]
@@ -219,7 +226,16 @@ class TraceGenerator(Generator):
         self.times=[]
         ##each line is a time
         for line in f.readlines():
-            self.times.append(int(line.strip()))
+            items = line.strip().split()
+            if len(items)<=1:
+                time  = int(itmes[0])
+                job   = None
+                index = None
+            else:
+                time  = int(itmes[0])
+                job   = items[1].split(".")[0]
+                index = int(items[1].split(".")[1])
+            self.times.append((time,job,index))
         ##record current execution
         self.num=0
         self.finish=False;
@@ -230,23 +246,24 @@ class TraceGenerator(Generator):
             return None,0
         current=time.time()-self.start
         k=0
-        while self.times[self.num]<=current:
-            print self.times[self.num]
+        new_jobs=[]
+        while self.times[self.num][0]<=current:
+            job  =self.times[self.num][1]
+            index=self.times[self.num][2]
+            print self.times[self.num][0]," ",job,"  ",index
+            job = self._make_job_(job,index)
+            new_jobs.append(job)
             self.num=self.num+1
-            k=k+1
             if self.num>=len(self.times):
                 self.finish=True
                 break
+
         print self.PREFIX_NAME
         print "this round generates",k,"jobs current:",current
-        new_jobs=[]
-        if k<1:
+        if len(new_jobs) < 1:
             return None,0
-        while k > 0:
-            job = self._make_job_()
-            new_jobs.append(job)
-            k-=1
-        return new_jobs,self.sync
+        else:
+            return new_jobs,self.sync
 
 
 
