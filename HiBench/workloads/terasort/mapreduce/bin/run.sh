@@ -41,7 +41,7 @@ START_TIME=`timestamp`
 
 DOCKER_IMAGE_KEY="yarn.nodemanager.docker-container-executor.image-name"
 DOCKER_IMAGE_VALUE="sequenceiq/hadoop-docker:2.4.1"
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort  -D mapreduce.job.queuename=${QUEUE_NAME}  -D${REDUCER_CONFIG_NAME}=6  -Dmapreduce.map.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE" -Dmapreduce.reduce.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE"  -Dyarn.app.mapreduce.am.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE"  ${INPUT_HDFS} ${OUTPUT_HDFS} 
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort  -D mapreduce.job.queuename=${QUEUE_NAME}  -D${REDUCER_CONFIG_NAME}=60  -Dmapreduce.map.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE" -Dmapreduce.reduce.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE"  -Dyarn.app.mapreduce.am.env="$DOCKER_IMAGE_KEY=$DOCKER_IMAGE_VALUE"  ${INPUT_HDFS} ${OUTPUT_HDFS} 
 
 
 #run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -D${REDUCER_CONFIG_NAME}=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 

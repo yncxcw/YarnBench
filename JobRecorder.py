@@ -132,7 +132,7 @@ class JobRecorder:
                 continue
             else:
                 final_run_list.append(run)
-        #print final_run_list
+        print final_run_list
         #FNULL=open(os.devnull,'w')
         index = random.randint(1,1000000)
         print index
