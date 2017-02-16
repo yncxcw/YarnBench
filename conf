@@ -28,30 +28,36 @@ generators = TraceGenerator1
 
 spark.jobs                           =kmeans1,kmeans2,kmeans3,pagerank1,pagerank2,pagerank3
 
-spark.jobs.pagerank1.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn-client,--queue:default,--num-executors:2,--executor-cores:16, --executor-memory:64g,--jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank1.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster, --num-executors:2,--executor-cores:16, --executor-memory:64g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
+#spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
+
 #numbers of iterations
 spark.jobs.pagerank1.parameters        =3   
 
-spark.jobs.pagerank2.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn-client,--queue:default,--num-executors:2,--executor-cores:16, --executor-memory:64g,--jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank2.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:2,--executor-cores:16, --executor-memory:64g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank2.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input2/edges
 #numbers of iterations
 spark.jobs.pagerank2.parameters        =3
 
-spark.jobs.pagerank3.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn-client,--queue:default,--num-executors:2,--executor-cores:16, --executor-memory:64g,--jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank3.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:2,--executor-cores:16, --executor-memory:64g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank3.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input3/edges
 #numbers of iterations
 spark.jobs.pagerank3.parameters        =3
 
 
-spark.jobs.kmeans1.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn-client --queue default, --num-executors:5, --executor-cores:16, --executor-memory:64g, --jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
-spark.jobs.kmeans1.inputs              =hdfs://host6:9100/HiBench/Kmeans/Inpu1/samples
+spark.jobs.kmeans1.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn, --deploy-mode:cluster, --num-executors:5, --executor-cores:16, --executor-memory:64g, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
+spark.jobs.kmeans1.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input1/samples
+spark.jobs.kmeans1.output              =none
 
-spark.jobs.kmeans2.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn-client --queue default, --num-executors:5, --executor-cores:16, --executor-memory:64g, --jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
+spark.jobs.kmeans2.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn, --deploy-mode:cluster, --num-executors:5, --executor-cores:16, --executor-memory:64g, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
 spark.jobs.kmeans2.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input2/samples
+spark.jobs.kmeans2.output              =none
 
-spark.jobs.kmeans3.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn-client --queue default, --num-executors:5, --executor-cores:16, --executor-memory:64g, --jars:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
+spark.jobs.kmeans3.keyvalues           =--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --master:yarn, --deploy-mode:cluster, --num-executors:5, --executor-cores:16, --executor-memory:64g, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:5
 spark.jobs.kmeans3.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input3/samples
+spark.jobs.kmeans3.output              =none
+
 
 ##spark sql job configure
 ##   configure the possible path to store query 

@@ -123,11 +123,14 @@ class JobRecorder:
         run_list.append(self.exe)
         ##append key values
         for (key,value) in self.job_keyValues:
-            run_list.append(key)
-            run_list.append(value)
+            if key != "none":
+                run_list.append(key)
+            if value != "none":
+                run_list.append(value)
         for input in self.job_input:
             run_list.append(input)
-        run_list.append(self.job_output)
+        if self.job_output != "none":
+            run_list.append(self.job_output)
         ##append parameter for certain workload
         for parameter in self.job_parameters:
             run_list.append(parameter)
@@ -138,7 +141,7 @@ class JobRecorder:
                 continue
             else:
                 final_run_list.append(run)
-        print final_run_list
+        print " ".join(final_run_list)
         #FNULL=open(os.devnull,'w')
         index = random.randint(1,1000000)
         print index
@@ -432,7 +435,7 @@ class SparkSQLMakeJob(MakeJob):
         self.add_keyvalues(name,job)
         sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
         assert(os.path.exists(sql_path))
-         self.add_parameters(name,job)
+        self.add_parameters(name,job)
         return job
         
 
