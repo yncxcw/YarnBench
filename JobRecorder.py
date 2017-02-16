@@ -133,10 +133,10 @@ class JobRecorder:
             else:
                 final_run_list.append(run)
         print final_run_list
-        FNULL=open(os.devnull,'w')
+        #FNULL=open(os.devnull,'w')
         index = random.randint(1,1000000)
         print index
-        #FNULL=open("./test/temp_"+str(index),'w')
+        FNULL=open("./test/temp_"+str(index),'w')
 
         self.job_process = subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT) 
         return None
@@ -304,7 +304,7 @@ class MakeJob:
             return job
         if len(self.job_conf[name]["parameters"]) == 0:
             return job
-        for parameter in job_conf[name]["parameters"]:
+        for parameter in self.job_conf[name]["parameters"]:
             job.add_parameters(parameter)
 
         return job
