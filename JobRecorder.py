@@ -72,7 +72,7 @@ class JobRecorder:
         self.jar            =None
         self.exe            =None
         self.job_name       =None
-        self.job_keyValues  ={}
+        self.job_keyValues  =[]
         self.job_parameters =[]
         self.job_input      =[]
         self.job_output     =None
@@ -100,8 +100,9 @@ class JobRecorder:
     def add_parameters(self,parameter):
         self.job_parameters.append(parameter)
 
+    ##we do not use dic here to preserve the order
     def add_keyvalues(self,key,value):
-        self.job_keyValues[key]=value
+        self.job_keyValues.append((key,value))
 
 
     def is_finish(self):
@@ -113,18 +114,23 @@ class JobRecorder:
     def run_job(self):
         print "start job",self.current_id
         run_list = []
+        ##append bin(e.g., spark-submit)
         run_list.append(self.JOB_BIN)
+        ##append command
         run_list.append(self.job_command)
         run_list.append(self.jar)
+        ##append exe e.g., wordcount
         run_list.append(self.exe)
-        for parameter in self.job_parameters:
-            run_list.append(parameter)
-        for key in self.job_keyValues.keys():
+        ##append key values
+        for (key,value) in self.job_keyValues:
             run_list.append(key)
-            run_list.append(self.job_keyValues[key])
+            run_list.append(value)
         for input in self.job_input:
             run_list.append(input)
         run_list.append(self.job_output)
+        ##append parameter for certain workload
+        for parameter in self.job_parameters:
+            run_list.append(parameter)
 
         final_run_list = []
         for run in run_list:
@@ -290,13 +296,7 @@ class MakeJob:
             else:
                 pass
 
-            key_values = {}
-            for key_value in keyvalues:
-                key  = key_value.split(":")[0].strip()
-                value= key_value.split(":")[1].strip()
-                key_values[key] = value
-
-            self.job_conf[job]["keyvalues"] = key_values
+            self.job_conf[job]["keyvalues"] = keyvalues
 
 
     def add_parameters(self,name,job):
@@ -318,8 +318,10 @@ class MakeJob:
         if len(self.job_conf[name]["keyvalues"]) is 0:
             return job 
 
-        for key in self.job_conf[name]["keyvalues"].keys():
-            job.add_keyvalues(key,self.job_conf[name]["keyvalues"][key])
+        for keyvalue in self.job_conf[name]["keyvalues"]:
+            key  = keyvalue.split(":")[0].strip()
+            value= keyvalue.split(":")[1].strip()
+            job.add_keyvalues(key,value)
 
         return job
         
@@ -398,8 +400,8 @@ class SparkMakeJob(MakeJob):
                                 conf      =self.conf
                                 )
         self.add_parameters(name,job)
-        self.add_keyvalues(name,job)
         job.add_keyvalues("--queue",self.queue)
+        self.add_keyvalues(name,job)
         return job
 
 class SparkSQLMakeJob(MakeJob):
@@ -424,12 +426,13 @@ class SparkSQLMakeJob(MakeJob):
                                  )
 
         job.exe = name
+        job.add_keyvalues("--queue",self.queue)
+        job.add_keyvalues("-f",sql_path)
+
         self.add_keyvalues(name,job)
         sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
         assert(os.path.exists(sql_path))
-        job.add_keyvalues("--queue",self.queue)
-        job.add_keyvalues("-f",sql_path)
-        self.add_parameters(name,job)
+         self.add_parameters(name,job)
         return job
         
 
