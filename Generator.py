@@ -231,8 +231,8 @@ class TraceGenerator(Generator):
                 name = None
             else:
                 stime  = int(items[0])
-                job   = items[1].split(".")[0]
-                name =  items[1].split(".")[1]
+                job   = items[1].split(",")[0]
+                name =  items[1].split(",")[1]
             self.times.append((stime,job,name))
         ##record current execution
         self.num=0
