@@ -179,6 +179,7 @@ class ParameterSlice:
         
 def read_json_url(url):
         dict_read = {}
+        response=None
         try:
             response  = urllib2.urlopen(url)
             dict_read = json.loads(response.read())

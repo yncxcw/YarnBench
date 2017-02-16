@@ -72,13 +72,11 @@ class Generator:
         return False
 
     ##make a job from job_types 
-    def _make_job_(self,job=None,index=None):
-        if job:
-            job_maker = self.job_types[job]
-        else: 
+    def _make_job_(self,job=None,name=None):
+        if job is None:
             index = ConfUtils.get_type_ratio(self.job_ratios)
-            job_maker = self.job_types[index]
-        return self.job_maker_sets[job_maker].make_job(index)  
+            job   = self.job_types[index]
+        return self.job_maker_sets[job].make_job(name)  
         
     def _update_(self):
         pass
@@ -228,14 +226,14 @@ class TraceGenerator(Generator):
         for line in f.readlines():
             items = line.strip().split()
             if len(items)<=1:
-                time  = int(itmes[0])
+                stime  = int(items[0])
                 job   = None
-                index = None
+                name = None
             else:
-                time  = int(itmes[0])
+                stime  = int(items[0])
                 job   = items[1].split(".")[0]
-                index = int(items[1].split(".")[1])
-            self.times.append((time,job,index))
+                name =  items[1].split(".")[1]
+            self.times.append((stime,job,name))
         ##record current execution
         self.num=0
         self.finish=False;
@@ -249,9 +247,9 @@ class TraceGenerator(Generator):
         new_jobs=[]
         while self.times[self.num][0]<=current:
             job  =self.times[self.num][1]
-            index=self.times[self.num][2]
-            print self.times[self.num][0]," ",job,"  ",index
-            job = self._make_job_(job,index)
+            name =self.times[self.num][2]
+            print self.times[self.num][0]," ",job,"  ",name
+            job = self._make_job_(job,name)
             new_jobs.append(job)
             self.num=self.num+1
             if self.num>=len(self.times):

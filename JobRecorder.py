@@ -133,10 +133,10 @@ class JobRecorder:
             else:
                 final_run_list.append(run)
         print final_run_list
-        #FNULL=open(os.devnull,'w')
+        FNULL=open(os.devnull,'w')
         index = random.randint(1,1000000)
         print index
-        FNULL=open("./test/temp_"+str(index),'w')
+        #FNULL=open("./test/temp_"+str(index),'w')
 
         self.job_process = subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT) 
         return None
@@ -180,10 +180,8 @@ class HadoopJobRecorder(JobRecorder):
     
 class SparkJobRecorder(JobRecorder):
 
-    def __init__(self, conf,job_home,job_user,job_jar,job_exe,job_input=None,job_output=None):
+    def __init__(self, conf,job_home,job_user,job_input=None,job_output=None):
         JobRecorder.__init__(self,job_home,job_user,conf)
-        self.jar            =job_jar
-        self.exe            =job_exe
         self.job_input      =job_input
         self.job_output     =job_output    
         self.JOB_BIN        =self.JOB_HOME+"/bin/spark-submit"
@@ -236,7 +234,7 @@ class MakeJob:
         self.job_home =None
         self.job_user =conf.get("user")[0]
         self.queue    =queue
-        self.jobs     = []
+        self.jobs          = []
         if conf.get(self.PREFIX_NAME) is None:
             raise Exception("jobs can not be null")
        
@@ -326,7 +324,7 @@ class MakeJob:
         return job
         
     
-    def make_job(self, index):
+    def make_job(self, job_name):
         pass
 
 
@@ -339,11 +337,13 @@ class HadoopMakeJob(MakeJob):
         self.job_home = self.conf.get("hadoop.home")[0]
 
 
-    def make_job(self,index):
-        if index == -1:
+    def make_job(self,job_name):
+        if job_name == None:
             index = ConfUtils.get_type_ratio(self.ratios)
-        assert(index >=0 and index < len(self.jobs))
-        name   = self.jobs[index]
+            assert(index >=0 and index < len(self.jobs))
+            name  = self.jobs[index]
+        else:
+            name = job_name
         jar    = self.job_conf[name]["jars"]
         exe    = name
         inputs = self.job_conf[name]["inputs"]
@@ -377,26 +377,22 @@ class SparkMakeJob(MakeJob):
         MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
-    def make_job(self,index):
-        if index == -1:
+    def make_job(self,job_name):
+        if job_name is None:
             index = ConfUtils.get_type_ratio(self.ratios)
-        index = ConfUtils.get_type_ratio(self.ratios)
-        assert(index >=0 and index < len(self.jobs))
-        name   = self.jobs[index]
-        jar    = self.job_conf[name]["jars"]
-        exe    = name
-        inputs = self.job_conf[name]["inputs"]
-    
+            assert(index >=0 and index < len(self.jobs))
+            name  = self.jobs[index]
+        else:
+            name  = job_name
+        inputs = self.job_conf[name]["inputs"] 
         if self.job_conf[name]["output"] is not None:
             output = self.job_conf[name]["output"]
         else:
-            output = "/output_"+"spark"+exe+"_"+str(random.randint(1,1000)) 
+            output = "/output_"+"spark_"+str(random.randint(1,1000000)) 
 
         job = SparkJobRecorder(
                                 job_home = self.job_home,
                                 job_user = self.job_user,
-                                job_jar  = jar          ,
-                                job_exe  = name         ,
                                 job_input= inputs       ,
                                 job_output=output       ,
                                 conf      =self.conf
@@ -414,11 +410,13 @@ class SparkSQLMakeJob(MakeJob):
         MakeJob.__init__(self,conf,queue)
         self.job_home = self.conf.get("spark.home")[0]
 
-    def make_job(self,index):
-        if index == -1:
+    def make_job(self,job_name):
+        if job_name is None:
             index = ConfUtils.get_type_ratio(self.ratios)
-        assert(index >=0 and index < len(self.jobs))
-        name  = self.jobs[index]
+            assert(index >=0 and index < len(self.jobs))
+            name = self.jobs[index]
+        else:
+            name = job_name
         job = SparkSQLJobRecorder(
                                  job_home = self.job_home,
                                  job_user = self.job_user,
@@ -449,13 +447,13 @@ class HiBenchMakeJob(MakeJob):
             self.job_types = types
 
 
-    def make_job(self,index):
-        if index == -1:
+    def make_job(self,job_name):
+        if job_name is None:
             index = ConfUtils.get_type_ratio(self.ratios)
-
-        index = ConfUtils.get_type_ratio(self.ratios) 
-        assert(index >=0 and index < len(self.jobs))
-        name  = self.jobs[index] 
+            assert(index >=0 and index < len(self.jobs))
+            name  = self.jobs[index] 
+        else:
+            name  = job_name
         job   = HiBenchJobRecorder(
                                   job_home = self.job_home,
                                   job_user = self.job_user,
