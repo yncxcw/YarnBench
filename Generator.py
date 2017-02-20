@@ -224,6 +224,8 @@ class TraceGenerator(Generator):
         self.times=[]
         ##each line is a time
         for line in f.readlines():
+            if len(line) <=1:
+                continue
             items = line.strip().split()
             if len(items)<=1:
                 stime  = int(items[0])
@@ -264,7 +266,8 @@ class TraceGenerator(Generator):
             return new_jobs,self.sync
 
 
-
+    def exit(self):
+        return self.finish
 
 
 ##generate request in to match the capacity that user set

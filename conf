@@ -10,7 +10,7 @@ jobs=hibench
 user=admin
 
 ##run time(s)
-runtime=50
+runtime=18500
 
 hadoop.url = http://localhost:8088
 ##Hadoop Mapreduce job configure, Hadoop generator will randminly pick up one job to run
@@ -70,7 +70,7 @@ sparksql.jobs.path                   = /home/admin/apache-hive-2.0.0-bin/hive-te
 sparksql.jobs                        =tpch_query1.sql,tpch_query3.sql,tpch_query4.sql,tpch_query5.sql,tpch_query6.sql,tpch_query7.sql,tpch_query8.sql,tpch_query9.sql,tpch_query10.sql,tpch_query11.sql,tpch_query12.sql
 #sparksql.jobs.ratios                = 1
 
-sparksql.jobs.keyvalues         = --master:yarn,--deploy-mode:client, --executor-cores:4,--executor-memory:2G,--driver-memory:1G,--num-executors:4,--properties-file:/home/admin/spark-1.6.1-bin-hadoop2.6/conf/spark-defaults.conf,--jars:/home/admin/spark-1.6.1-bin-hadoop2.6/lib/mysql-connector-java-5.1.39-bin.jar,--database:tpch_flat_orc_10             
+sparksql.jobs.keyvalues         = --master:yarn,--deploy-mode:client, --executor-cores:8,--executor-memory:4G,--driver-memory:1G,--num-executors:8,--properties-file:/home/admin/spark-1.6.1-bin-hadoop2.6/conf/spark-defaults.conf,--jars:/home/admin/spark-1.6.1-bin-hadoop2.6/lib/mysql-connector-java-5.1.39-bin.jar,--database:tpch_flat_orc_10             
 
 
 
@@ -78,5 +78,5 @@ sparksql.jobs.keyvalues         = --master:yarn,--deploy-mode:client, --executor
 generator.TraceGenerator1.jobs=spark,sparksql
 generator.TraceGenerator1.queue=default
 generator.TraceGenerator1.sync=1
-generator.TraceGenerator1.ftrace=./trace/jmf
+generator.TraceGenerator1.ftrace=./trace/jm_tpch1
 
