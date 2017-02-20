@@ -224,6 +224,8 @@ class TraceGenerator(Generator):
         self.times=[]
         ##each line is a time
         for line in f.readlines():
+            if line[0] == "#":
+                continue
             if len(line) <=1:
                 continue
             items = line.strip().split()
