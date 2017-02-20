@@ -1,0 +1,3 @@
+1     spark.kmeans1
+10    spark.pagerank1
+20    spark.kmeans2
