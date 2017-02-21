@@ -252,7 +252,7 @@ class TraceGenerator(Generator):
         while self.times[self.num][0]<=current:
             job  =self.times[self.num][1]
             name =self.times[self.num][2]
-            print self.times[self.num][0]," ",job,"  ",name
+            #print self.times[self.num][0]," ",job,"  ",name
             job = self._make_job_(job,name)
             new_jobs.append(job)
             self.num=self.num+1
@@ -260,8 +260,8 @@ class TraceGenerator(Generator):
                 self.finish=True
                 break
 
-        print self.PREFIX_NAME
-        print "this round generates",k,"jobs current:",current
+        #print self.PREFIX_NAME
+        #print "this round generates",k,"jobs current:",current
         if len(new_jobs) < 1:
             return None,0
         else:
