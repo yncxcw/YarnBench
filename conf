@@ -28,7 +28,7 @@ generators = TraceGenerator1
 
 spark.jobs                             =kmeans1,kmeans2,kmeans3,pagerank1,pagerank2,pagerank3
 
-spark.jobs.pagerank1.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster, --num-executors:10,--executor-cores:16, --executor-memory:8g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank1.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster, --num-executors:10,--executor-cores:16, --executor-memory:4g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
 #spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
 
@@ -40,7 +40,7 @@ spark.jobs.pagerank1.cpu               =16
 spark.jobs.pagarank1.mem               =64
 spark.jobs.pagerank1.task              =10
 
-spark.jobs.pagerank2.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:10,--executor-cores:16, --executor-memory:8g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank2.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:10,--executor-cores:16, --executor-memory:4g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank2.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input2/edges
 #numbers of iterations
 spark.jobs.pagerank2.parameters        =10
@@ -51,7 +51,7 @@ spark.jobs.pagarank2.mem               =64
 spark.jobs.pagerank2.task              =10
 
 
-spark.jobs.pagerank3.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:10,--executor-cores:16, --executor-memory:8g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank3.keyvalues         = --properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --master:yarn, --deploy-mode:cluster,--num-executors:10,--executor-cores:16, --executor-memory:4g,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
 spark.jobs.pagerank3.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input3/edges
 #numbers of iterations
 spark.jobs.pagerank3.parameters        =4
