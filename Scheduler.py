@@ -69,6 +69,19 @@ class SchedulerPlan:
         ##whole job set
         self.jobs = JobSet()      
 
+    ##for some considerationgs like load of submitter server
+    def should_stop(self):
+        ##warning for the burden of scheduler:
+        if self.monitor.get_nm_acApps() > 90:
+            print "stop submitting"
+            print "submiteed: ",self.jobs.submitted()
+            return True
+        if self.monitor.get_nm_acApps() > 80:
+            print "warning for submitter"
+            print "submiteed: ",self.jobs.submitted()
+            return False
+        return False
+
 
     def run(self):
 
@@ -78,6 +91,8 @@ class SchedulerPlan:
         ##main loop
         generator_exist = False
         while self.run_time > 0 and generator_exist is False:
+            if self. should_stop():
+                break
             for generator in self.generators:
                 if generator.exit() is True:
                     generator_exist = True

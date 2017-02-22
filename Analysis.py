@@ -83,7 +83,8 @@ class JobAnalysis(Analysis):
             for job in job_list:
                 queue_time = (job.run_time - job.start_time)/1000
                 run_time   = (job.finish_time - job.run_time)/1000
-                log.write(job.job_id+","+str(queue_time)+","+str(run_time)+"\n")
+                final_status=job.finalStatus
+                log.write(job.job_id+","+final_status+","+str(queue_time)+","+str(run_time)+"\n")
             log.close()
 
 

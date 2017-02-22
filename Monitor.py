@@ -42,6 +42,8 @@ class Monitor(Thread):
         self.queue_info={}
         ##submit info
         self.submit_info = {}
+        ##current active applications
+        self.active_apps = 0
 
     ##return funning job_dicts
     def get_job_dicts(self):
@@ -81,9 +83,11 @@ class Monitor(Thread):
         self.is_running = False
 
     ##to record the submit jobs
-    def monitor_submot(queue,nums):
+    def monitor_submot(self,queue,nums):
         pass
 
+    def get_nm_acApps(self):
+        return self.active_apps
 
     def monitor_jobs(self):
         job_dicts = self.get_job_dicts()
@@ -139,7 +143,7 @@ class FifoQueueMonitor(Monitor):
         self.queue_info[USENOCAP] = root_queue[USENOCAP]
         self.queue_info[AVANOCAP] = root_queue[AVANOCAP]
         self.queue_info[TOTALCAP] = root_queue[TOTALCAP]
-
+        self.active_apps          = root_queue[NMAPP]
 
 class CapacityQueueMonitor(Monitor):
 
@@ -154,6 +158,8 @@ class CapacityQueueMonitor(Monitor):
 
     ##current we only supports capacity schduler
     def monitor_queue(self):
+        ##ready for new round of updating
+        self.active_apps = 0
         dict_read = ConfUtils.read_json_url(self.url)
         scheduler_type = dict_read["scheduler"]["schedulerInfo"]["type"]
         if scheduler_type != "capacityScheduler":
@@ -183,6 +189,8 @@ class CapacityQueueMonitor(Monitor):
         if self.queue_info[queue_name].get(NMACAPP) is None:
             self.queue_info[queue_name][NMACAPP] = {}
         self.queue_info[queue_name][NMACAPP][ELAPSE] = float(this_queue[NMACAPP])
+        ##record current active apps
+        self.active_apps =  self.active_apps + float(this_queue[NMACAPP])
 
         if self.queue_info[queue_name].get(NMPEAPP) is None:
             self.queue_info[queue_name][NMPEAPP] = {}

@@ -68,6 +68,16 @@ class Configure:
         except KeyError as error:
 	        print "error when try to get by key",error
         return None		
+    
+    ## get two configuration value, return the none null
+    ## note key2 is a back up option
+    def gets(self,key1,key2):
+        if self.get(key1) is not None:
+            return self.get(key1)
+        elif self.get(key2) is not None:
+            return self.get(key2)
+        else:
+            return None
 
     def addConf(self,key,value=None):
 	    self.confs[key] = value

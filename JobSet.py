@@ -21,6 +21,8 @@ class JobSet:
             self.job_set[job.current_id]  = job
 
 
+    def submitted_jobs(self):
+        return len(self.jobs)
 
     def get_job_all_finished(self):
         pass

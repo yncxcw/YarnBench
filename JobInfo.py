@@ -4,6 +4,7 @@ PROGRESS ="progress"
 CONTAINER="runningContainers"
 MB       ="allocatedMB"
 VCORE    ="allocatedVCores"
+FINALSTATUS="finalStatus"
 STATE    ="state"
 FINISH   ="finishedTime"
 START    ="startedTime"
@@ -19,6 +20,7 @@ class JobInfo:
         self.run_time    = 0
         self.state       = None
         self.finish      = False
+        self.finalStatus = None
         self.statics     ={}
 
     def monitor(self,dict_read):
@@ -49,6 +51,7 @@ class JobInfo:
         self.statics[VCORE][elapse_time]=int(dict_read[VCORE])
         ##record finish time
         if dict_read[STATE] == "FINISHED":
+            self.finalStatus=dict_read[FINALSTATUS]
             self.finish = True
             self.finish_time=int(dict_read[FINISH])
         pass
