@@ -9,7 +9,7 @@ STATE    ="state"
 FINISH   ="finishedTime"
 START    ="startedTime"
 ELAPSE   ="elapsedTime"
-
+JOBNAME  ="name"
 class JobInfo:
 
     def __init__(self,job_id):
@@ -28,6 +28,10 @@ class JobInfo:
         ##record start time
         if self.start_time == 0:
             self.start_time = int(dict_read[START])
+
+        if self.job_name   == None:
+            self.job_name   = dict_read[JOBNAME]
+
         ##record run_time if applicable
         if (self.state == "ACCEPTED" or self.state =="SUBMITTED") and (dict_read[STATE]=="RUNNING"):
             self.run_time = self.start_time + elapse_time 

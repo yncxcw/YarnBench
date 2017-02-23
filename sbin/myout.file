@@ -1,7 +1,0 @@
-error during initialize configure %s [Errno 2] No such file or directory: './conf'
-Traceback (most recent call last):
-  File "/home/cwei/project/YarnBench/Scheduler.py", line 125, in <module>
-    scheduler_plan = SchedulerPlan()
-  File "/home/cwei/project/YarnBench/Scheduler.py", line 16, in __init__
-    self.cluster_url = self.conf.get("hadoop.url")[0]+"/ws/v1/cluster/info"
-TypeError: 'NoneType' object has no attribute '__getitem__'
