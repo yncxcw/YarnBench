@@ -10,6 +10,8 @@ FINISH   ="finishedTime"
 START    ="startedTime"
 ELAPSE   ="elapsedTime"
 JOBNAME  ="name"
+
+
 class JobInfo:
 
     def __init__(self,job_id):

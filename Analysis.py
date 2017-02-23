@@ -55,6 +55,27 @@ class AnalysisList:
             analysis.analysis()
 
 
+class ClusterAnalysis(Analysis):
+
+
+    def __init__(self,cluster_infos):
+        Analysis.__init__(self,"ClusterAnalysis")
+        self.cluster_infos=cluster_infos
+
+
+    def analysis(self):
+        if self.path is None:
+            print "error path is None"
+            return
+        time_list = sorted(self.cluster_infos.keys())   
+        log = open(self.path+"/cluster.csv","w")
+        for time in time_list:
+            bundle=self.cluster_infos[time]
+            log.write(str(time)+","+str(bundle[0])+","+str(bundle[1])+","+str(bundle[2])+"\n")
+        log.close() 
+         
+        
+
 class JobAnalysis(Analysis):
 
 

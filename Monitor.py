@@ -3,7 +3,15 @@ import time
 import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
-from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis
+from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis,ClusterAnalysis
+
+##for cluster metrics
+
+APPCOM="appsCompleted"
+APPPEN="appsPending"
+APPRUN="appsRunning"
+
+
 ##for capacity scheduler
 
 ABCP   ="absoluteCapacity"      
@@ -30,6 +38,8 @@ class Monitor(Thread):
         self.start_time=str(int(time.time()*1000))
         self.url    = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
         self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps?startedTimeBegin="+self.start_time
+        self.cluster_url = conf.get("hadoop.url")[0]+"/ws/v1/cluster/metrics"
+
         ##mapping from the queue to finished jobs
         self.job_infos={}
         ##record running job id
@@ -38,6 +48,8 @@ class Monitor(Thread):
         self.finish   =set()
         ##if the working thread is running 
         self.is_running  =False
+        ##cluster info
+        self.cluster_info={}
         ##queue info
         self.queue_info={}
         ##submit info
@@ -64,6 +76,7 @@ class Monitor(Thread):
         while self.is_running:
             self.monitor_jobs()
             self.monitor_queue()
+            self.monitor_cluster()
             ##sleep for 2 seconds
             time.sleep(2)
     
@@ -75,6 +88,9 @@ class Monitor(Thread):
         ##analysis queue(TODO currently we only supportes capacity queue)
         queue_analy=CapacityQueueAnalysis(self.queue_info)
         analysis_list.add(queue_analy)
+        ##analysis cluster
+        cluster_analy=ClusterAnalysis(self.cluster_info)
+        analysis_list.add(cluster_analy)
         ##DO analysis here
         analysis_list.analysis()
 
@@ -89,6 +105,18 @@ class Monitor(Thread):
     def get_nm_acApps(self):
         return self.active_apps
 
+    def monitor_cluster(self):
+        dict_read = ConfUtils.read_json_url(self.cluster_url)
+        if dict_read is None:
+            print "error dict_read"
+            return
+        ELAPSE = int(time.time() - ConfUtils.START_TIME)
+        bundle=(float(dict_read["clusterMetrics"][APPCOM]),
+                float(dict_read["clusterMetrics"][APPPEN]),
+                float(dict_read["clusterMetrics"][APPRUN])
+                )
+        self.cluster_info[ELAPSE] = bundle
+        
     def monitor_jobs(self):
         job_dicts = self.get_job_dicts()
         if job_dicts is None:
