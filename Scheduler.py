@@ -74,11 +74,11 @@ class SchedulerPlan:
         ##warning for the burden of scheduler:
         if self.monitor.get_nm_acApps() > 90:
             print "stop submitting"
-            print "submiteed: ",self.jobs.submitted()
+            print "submiteed: ",self.jobs.submitted_jobs()
             return True
         if self.monitor.get_nm_acApps() > 80:
             print "warning for submitter"
-            print "submiteed: ",self.jobs.submitted()
+            print "submiteed: ",self.jobs.submitted_jobs()
             return False
         return False
 
