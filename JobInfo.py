@@ -56,7 +56,7 @@ class JobInfo:
             self.statics[VCORE] = {}
         self.statics[VCORE][elapse_time]=int(dict_read[VCORE])
         ##record finish time
-        if dict_read[STATE] == "FINISHED":
+        if dict_read[STATE] == "FINISHED" or dict_read[STATE] == "KILLED":
             self.finalStatus=dict_read[FINALSTATUS]
             self.finish = True
             self.finish_time=int(dict_read[FINISH])
