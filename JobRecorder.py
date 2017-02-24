@@ -281,21 +281,23 @@ class MakeJob:
 
             ##hadoop.jobs.wordcount.parameters should override hadoop.jobs.parameters if not null
             parameters = []
+            if conf.get(self.PREFIX_NAME+".parameters")  is not None:
+                parameters += conf.get(self.PREFIX_NAME+".parameters")
+            
             if conf.get(self.PREFIX_NAME+"."+job+".parameters") is not None: 
                 parameters += conf.get(self.PREFIX_NAME+"."+job+".parameters")
             
-            if conf.get(self.PREFIX_NAME+".parameters")  is not None:
-                parameters += conf.get(self.PREFIX_NAME+".parameters")
 
             self.job_conf[job]["parameters"] = parameters
 
             keyvalues = []
 
+            if conf.get(self.PREFIX_NAME+".keyvalues")  is not None:
+                keyvalues += conf.get(self.PREFIX_NAME+".keyvalues")
+            
             if conf.get(self.PREFIX_NAME+"."+job+".keyvalues") is not None:
                 keyvalues += conf.get(self.PREFIX_NAME+"."+job+".keyvalues")
             
-            if conf.get(self.PREFIX_NAME+".keyvalues")  is not None:
-                keyvalues += conf.get(self.PREFIX_NAME+".keyvalues")
 
             self.job_conf[job]["keyvalues"] = keyvalues
 
