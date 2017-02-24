@@ -283,10 +283,9 @@ class MakeJob:
             parameters = []
             if conf.get(self.PREFIX_NAME+"."+job+".parameters") is not None: 
                 parameters += conf.get(self.PREFIX_NAME+"."+job+".parameters")
-            elif conf.get(self.PREFIX_NAME+".parameters")  is not None:
+            
+            if conf.get(self.PREFIX_NAME+".parameters")  is not None:
                 parameters += conf.get(self.PREFIX_NAME+".parameters")
-            else:
-                pass
 
             self.job_conf[job]["parameters"] = parameters
 
@@ -294,10 +293,9 @@ class MakeJob:
 
             if conf.get(self.PREFIX_NAME+"."+job+".keyvalues") is not None:
                 keyvalues += conf.get(self.PREFIX_NAME+"."+job+".keyvalues")
-            elif conf.get(self.PREFIX_NAME+".keyvalues")  is not None:
+            
+            if conf.get(self.PREFIX_NAME+".keyvalues")  is not None:
                 keyvalues += conf.get(self.PREFIX_NAME+".keyvalues")
-            else:
-                pass
 
             self.job_conf[job]["keyvalues"] = keyvalues
 
