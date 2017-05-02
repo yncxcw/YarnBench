@@ -1,0 +1,130 @@
+##this file is used to configure generator propertyes
+
+hadoop.home =/home/admin/hadoop-2.7.1
+spark.home  =/home/admin/spark-2.0.1-bin-hadoop2.7
+hibench.home=/home/admin/tool/YarnBench/HiBench
+
+
+jobs=hibench
+
+user=admin
+
+
+#for laod simulator
+cluster.size=24
+##memory size for a siggle node(GB)
+cluster.node_mem=128
+##cpu cores for a single node(#)
+cluster.node_cpu=32
+
+
+##run time(s)
+runtime=18500
+
+hadoop.url = http://localhost:8088
+
+generators = TraceGenerator1
+
+
+spark.jobs                             =kmeans1,kmeans2,kmeans3,pagerank1,pagerank2,pagerank3
+
+spark.jobs.keyvalues                   = --master:yarn,--deploy-mode:cluster,--executor-memory:4g
+
+spark.jobs.pagerank1.keyvalues         = --name:pagerank1,--properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --num-executors:10,--executor-cores:16,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
+#spark.jobs.pagerank1.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input1/edges
+
+#numbers of iterations
+spark.jobs.pagerank1.parameters        =80   
+
+##for simulation
+spark.jobs.pagerank1.cpu               =16
+spark.jobs.pagarank1.mem               =64
+spark.jobs.pagerank1.task              =10
+
+spark.jobs.pagerank2.keyvalues         = --name:pagerank2,--properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --num-executors:10,--executor-cores:16,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank2.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input2/edges
+#numbers of iterations
+spark.jobs.pagerank2.parameters        =4
+
+##for simulation
+spark.jobs.pagerank2.cpu               =16
+spark.jobs.pagarank2.mem               =64
+spark.jobs.pagerank2.task              =10
+
+
+spark.jobs.pagerank3.keyvalues         = --name:pagerank3,--properties-file:/home/admin/HiBench/report/pagerank/spark/conf/sparkbench/spark.conf, --class: org.apache.spark.examples.SparkPageRank, --num-executors:10,--executor-cores:16,none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar                     
+spark.jobs.pagerank3.inputs            =hdfs://host6:9100/HiBench/Pagerank/Input3/edges
+#numbers of iterations
+spark.jobs.pagerank3.parameters        =2
+
+##for simulation
+spark.jobs.pagerank3.cpu               =16
+spark.jobs.pagarank3.mem               =64
+spark.jobs.pagerank3.task              =10
+
+
+
+spark.jobs.kmeans1.keyvalues           = --name:kmeans1,--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --num-executors:5, --executor-cores:16, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:300
+spark.jobs.kmeans1.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input1/samples
+spark.jobs.kmeans1.output              =none
+
+##for simulation
+spark.jobs.kmeans1.cpu                 =16
+spark.jobs.kmeans1.mem                 =32
+spark.jobs.kmeans1.task                =5
+
+
+
+
+spark.jobs.kmeans2.keyvalues           = --name:kmeans2,--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans,  --num-executors:5, --executor-cores:16, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:300
+spark.jobs.kmeans2.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input2/samples
+spark.jobs.kmeans2.output              =none
+
+##for simulation
+spark.jobs.kmeans2.cpu                 =16
+spark.jobs.kmeans2.mem                 =32
+spark.jobs.kmeans2.task                =5
+
+
+
+
+spark.jobs.kmeans3.keyvalues           = --name:kmeans3,--properties-file:/home/admin/HiBench/report/kmeans/spark/conf/sparkbench/spark.conf, --class: com.intel.hibench.sparkbench.ml.DenseKMeans, --num-executors:5, --executor-cores:16, none:/home/admin/HiBench/sparkbench/assembly/target/sparkbench-assembly-6.1-SNAPSHOT-dist.jar, -k:10, --numIterations:400
+spark.jobs.kmeans3.inputs              =hdfs://host6:9100/HiBench/Kmeans/Input3/samples
+spark.jobs.kmeans3.output              =none
+
+##for simulation
+spark.jobs.kmeans3.cpu                 =16
+spark.jobs.kmeans3.mem                 =32
+spark.jobs.kmeans3.task                =5
+
+
+
+
+##spark sql job configure
+##   configure the possible path to store query 
+sparksql.jobs.path                   = /home/admin/apache-hive-2.0.0-bin/hive-testbench/sample-queries-tpch/
+
+##   the final path to run query will be ./hive-test/query1
+#sparksql.jobs                   = tpch_query1.sql,tpch_query3.sql,tpch_query4.sql,tpch_query5.sql,tpch_query6.sql,tpch_query7.sql,tpch_query8.sql,tpch_query9.sql,tpch_query10.sql,tpch_query11.sql,tpch_query12.sql,tpch_query13.sql,tpch_query14.sql,tpch_query15.sql,tpch_query16.sql,tpch_query17.sql,tpch_query18.sql,tpch_query19.sql,
+
+
+sparksql.jobs                        =tpch_query1.sql,tpch_query3.sql,tpch_query4.sql,tpch_query5.sql,tpch_query6.sql,tpch_query7.sql,tpch_query8.sql,tpch_query9.sql,tpch_query10.sql,tpch_query11.sql,tpch_query12.sql
+#sparksql.jobs.ratios                = 1
+
+sparksql.jobs.keyvalues         = --master:yarn,--deploy-mode:client, --executor-cores:8,--executor-memory:4G,--driver-memory:1G,--num-executors:4,--properties-file:/home/admin/spark-1.6.1-bin-hadoop2.6/conf/spark-defaults.conf,--jars:/home/admin/spark-1.6.1-bin-hadoop2.6/lib/mysql-connector-java-5.1.39-bin.jar,--database:tpch_flat_orc_10             
+
+
+#for simulation
+spark.jobs.sparksql.cpu                 =8
+spark.jobs.sparksql.mem                 =4
+spark.jobs.sparksql.task                =8
+
+
+
+
+
+generator.TraceGenerator1.jobs=spark,sparksql
+generator.TraceGenerator1.queue=default
+generator.TraceGenerator1.sync=1
+generator.TraceGenerator1.ftrace=./trace/jm_spark
