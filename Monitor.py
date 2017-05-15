@@ -64,7 +64,9 @@ class Monitor(Thread):
             print "error dict_read"
             return None
         ##no job has been submitted yet
-        if dict_read["apps"] is None:
+        if dict_read.get("apps") is None:
+            return None
+        if dict_read["apps"].get("app") is None:
             return None
         return dict_read["apps"]["app"]
 
@@ -122,8 +124,10 @@ class Monitor(Thread):
         if job_dicts is None:
             return
         for job_dict in job_dicts:
+            ##print job_dict
             id    = job_dict["id"]
             queue = job_dict["queue"]
+            print id,queue
             ## we ignore, just continue
             if id in self.finish:
                 continue
