@@ -122,8 +122,8 @@ class Monitor(Thread):
         for node in dict_read["nodes"]["node"]:
             print node
             host=node["nodeHostName"]
-            if node_info.get(host) is None:
-                node_info[host]={}
+            if self.node_info.get(host) is None:
+                self.node_info[host]={}
             info=(float(node["usedMemoryMB"]),
                   float(node["usedVirtualCores"]),
                   float(node["resourceUtilization"]["nodePhysicalMemoryMB"]),
@@ -131,7 +131,7 @@ class Monitor(Thread):
                   float(node["resourceUtilization"]["aggregatedContainersPhysicalMemoryMB"]),
                   float(node["resourceUtilization"]["containersCPUUsage"])
                  )
-            node_info[host][ELAPSE]=info
+            self.node_info[host][ELAPSE]=info
         
     def monitor_cluster(self):
         dict_read = ConfUtils.read_json_url(self.cluster_url)
