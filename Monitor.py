@@ -3,7 +3,7 @@ import time
 import ConfUtils
 from JobInfo import JobInfo
 from  threading import Thread
-from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis,ClusterAnalysis
+from Analysis import Analysis,AnalysisList,JobAnalysis,CapacityQueueAnalysis,ClusterAnalysis,NodeAnalysis
 
 ##for cluster metrics
 
@@ -120,7 +120,6 @@ class Monitor(Thread):
             return 
         ELAPSE = int(time.time() - ConfUtils.START_TIME)
         for node in dict_read["nodes"]["node"]:
-            print node
             host=node["nodeHostName"]
             if self.node_info.get(host) is None:
                 self.node_info[host]={}
