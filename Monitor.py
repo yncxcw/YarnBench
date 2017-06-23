@@ -50,6 +50,8 @@ class Monitor(Thread):
         self.is_running  =False
         ##cluster info
         self.cluster_info={}
+        ##node info
+        self.node_info={}
         ##queue info
         self.queue_info={}
         ##submit info
@@ -107,10 +109,28 @@ class Monitor(Thread):
     def get_nm_acApps(self):
         return self.active_apps
 
+    def monitor_node(self):
+        dict_read = ConfUtils.read_json_url(self.node_url)
+        if dict_read is None:
+            print "error node dict_read"
+        ELAPSE = int(int.time() - ConfUtils.START_TIME)
+        for node in dict_read["nodes"]:
+            host=node["nodeHostName"]
+            if node_info.get(host) is None:
+                node_info[host]={}
+            info=(float(node["usedMemoryMB"]),
+                  float(node["usedVirtualCores"]),
+                  float(node["resourceUtilization"]["nodePhysicalMemoryMB"]),
+                  float(node["resourceUtilization"]["nodeCPUUsage"]),
+                  float(node["resourceUtilization"]["aggregatedContainersPhysicalMemoryMB"]),
+                  float(node["resourceUtilization"]["containersCPUUsage"])
+                 )
+            node_info[host][ELAPSE]=info
+        
     def monitor_cluster(self):
         dict_read = ConfUtils.read_json_url(self.cluster_url)
         if dict_read is None:
-            print "error dict_read"
+            print "error cluster dict_read"
             return
         ELAPSE = int(time.time() - ConfUtils.START_TIME)
         bundle=(float(dict_read["clusterMetrics"][APPCOM]),

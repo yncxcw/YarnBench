@@ -55,6 +55,28 @@ class AnalysisList:
             analysis.analysis()
 
 
+class NodeAnalysis(Analysis):
+    
+    def __init__(self,node_infos):
+        Analysis.__init__(self,"NodeAnalysis")
+        self.node_infos=node_infos
+
+    def analysis(self):
+        if self.path is None:
+            print "error path is None"
+            return
+        for node_host in self.node_infos.keys():
+            node=self.node_infos[node_host]
+            time_list=sorted(node.keys())
+            log=open(self.path+"/"+node_host+".csv","w")
+            log.write("assignedM,assignedC,nodeM,nodeC,containerM,conatinerC\n")
+            for time in time_list:
+                bundle=node[time]
+                log.write(str(time)+","+str(bundle[0])+","+str(bundle[1])+"," +str(bundle[2])+"," +str(bundle[3])+","
+                         +str(bundle[4])+"," +str(bundle[5])+"\n")
+            log.close()
+
+
 class ClusterAnalysis(Analysis):
 
 

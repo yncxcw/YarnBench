@@ -21,27 +21,33 @@ def get_time_series(fname):
         Y.append(float(item[1]))
     return X,Y
 
+
+def get_queue_run(fname):
+    file=open(fname,"r")
+    X=[]
+    Y=[]
+    Z=[]
+    count=0
+    for line in file.readlines():
+        item=line.strip().split(",")
+        X.append(count)
+        Y.append(int(item[3]))
+        Z.append(int(item[4]))
+        count=count+1
+    return X,Y,Z
+
 def draw_plot(X,Y):
     pl.figure()
     pl.plot(X,Y)
 
 
-fname="./10GB_TPCH/queue_default_absoluteUsedCapacity.csv"
-X,Y=get_time_series(fname)
-draw_plot(X,Y)
+def draw_plots(X,Y,Z):
+    pl.figure()
+    pl.plot(X,Y)
+    pl.plot(X,Z)
 
-X,Y=get_cdf(Y)
-draw_plot(X,Y)
-
-
-fname="./10GB_TPCH/queue_default_numApplications.csv"
-X,Y=get_time_series(fname)
-draw_plot(X,Y)
-
-X,Y=get_cdf(Y)
-draw_plot(X,Y)
-
-
-
+fname="./SPARK_2/job_default.csv"
+X,Y,Z=get_queue_run(fname)
+draw_plots(X,Y,Z)
 pl.show()
     

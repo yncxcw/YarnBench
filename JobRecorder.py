@@ -143,9 +143,8 @@ class JobRecorder:
                 final_run_list.append(run)
         print " ".join(final_run_list)
         #FNULL=open(os.devnull,'w')
-        index = random.randint(1,1000000)
         #print index
-        FNULL=open("./test/temp_"+str(index),'w')
+        FNULL=open("./test/temp_"+str(self.current_id),'w')
 
         self.job_process = subprocess.Popen(final_run_list,stdout=FNULL,stderr=subprocess.STDOUT) 
         return None
