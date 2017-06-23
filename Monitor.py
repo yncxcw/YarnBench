@@ -39,7 +39,7 @@ class Monitor(Thread):
         self.url    = conf.get("hadoop.url")[0]+"/ws/v1/cluster/scheduler"
         self.job_url= conf.get("hadoop.url")[0]+"/ws/v1/cluster/apps?startedTimeBegin="+self.start_time
         self.cluster_url = conf.get("hadoop.url")[0]+"/ws/v1/cluster/metrics"
-
+        self.node_url=conf.get("hadoop.url")[0]+"/ws/v1/cluster/nodes"
         ##mapping from the queue to finished jobs
         self.job_infos={}
         ##record running job id
@@ -113,6 +113,7 @@ class Monitor(Thread):
         dict_read = ConfUtils.read_json_url(self.node_url)
         if dict_read is None:
             print "error node dict_read"
+            return 
         ELAPSE = int(int.time() - ConfUtils.START_TIME)
         for node in dict_read["nodes"]:
             host=node["nodeHostName"]
