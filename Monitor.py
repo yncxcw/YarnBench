@@ -81,6 +81,7 @@ class Monitor(Thread):
             self.monitor_jobs()
             self.monitor_queue()
             self.monitor_cluster()
+            self.monitor_node()
             ##sleep for 2 seconds
             time.sleep(2)
     
@@ -95,6 +96,9 @@ class Monitor(Thread):
         ##analysis cluster
         cluster_analy=ClusterAnalysis(self.cluster_info)
         analysis_list.add(cluster_analy)
+        ##analysis node
+        node_analy=NodeAnalysis(self.node_info)
+        analysis_list.add(node_analy)
         ##DO analysis here
         analysis_list.analysis()
 
