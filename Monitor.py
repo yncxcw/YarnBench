@@ -119,8 +119,7 @@ class Monitor(Thread):
             print "error node dict_read"
             return 
         ELAPSE = int(time.time() - ConfUtils.START_TIME)
-        print dict_read["nodes"]
-        for node in dict_read["nodes"]:
+        for node in dict_read["nodes"]["node"]:
             print node
             host=node["nodeHostName"]
             if node_info.get(host) is None:
