@@ -120,6 +120,7 @@ class Monitor(Thread):
             return 
         ELAPSE = int(time.time() - ConfUtils.START_TIME)
         for node in dict_read["nodes"]:
+            print node
             host=node["nodeHostName"]
             if node_info.get(host) is None:
                 node_info[host]={}
