@@ -152,7 +152,7 @@ class Monitor(Thread):
             ##print job_dict
             id    = job_dict["id"]
             queue = job_dict["queue"]
-            print id,queue
+            #print id,queue
             ## we ignore, just continue
             if id in self.finish:
                 continue
