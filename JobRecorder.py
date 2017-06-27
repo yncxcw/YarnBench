@@ -428,10 +428,11 @@ class SparkSQLMakeJob(MakeJob):
                                  )
 
         job.exe = name
-        sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
-        assert(os.path.exists(sql_path))
+        #sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
+        #assert(os.path.exists(sql_path))
         job.add_keyvalues("--queue",self.queue)
-        job.add_keyvalues("-f",sql_path)
+        #job.add_keyvalues("-f",sql_path)
+        job.add_parameters(name)
         self.add_keyvalues(name,job)
         self.add_parameters(name,job)
         return job
