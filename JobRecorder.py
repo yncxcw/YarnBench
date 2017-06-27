@@ -203,7 +203,8 @@ class SparkSQLJobRecorder(JobRecorder):
 
     def __init__(self, conf, job_home,job_user):
         JobRecorder.__init__(self,job_home,job_user,conf)
-        self.JOB_BIN         = self.JOB_HOME+"/bin/spark-sql"
+        ##TODO temporary change
+        self.JOB_BIN         = self.JOB_HOME+"/bin/spark-submit"
         self.JOB_JOB_HISTORY = "/spark/spark-events"+self.JOB_USER
         pass 
 
@@ -427,7 +428,7 @@ class SparkSQLMakeJob(MakeJob):
                                  conf     = self.conf
                                  )
 
-        job.exe = name
+        #job.exe = name
         #sql_path = self.conf.get(self.PREFIX_NAME+".path")[0]+name 
         #assert(os.path.exists(sql_path))
         job.add_keyvalues("--queue",self.queue)
