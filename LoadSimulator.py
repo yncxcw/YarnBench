@@ -79,8 +79,10 @@ class Metrics:
                 usage= 1.0*(self.total.mem-resource.mem)/self.total.mem
                 X.append(time)
                 Y.append(usage)
+            X,Y=self.generate_cdf(Y)
             pl.figure()
             pl.plot(X,Y)
+            pl.grid()
             pl.show()
             ##TODO draw code here
         else:
