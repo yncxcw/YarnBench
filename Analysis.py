@@ -135,7 +135,7 @@ class JobAnalysis(Analysis):
                 run_time   = (job.finish_time - job.run_time)/1000
                 final_status=job.finalStatus
                 name        =job.job_name
-                self,writeLog(log,job.job_id+","+name+","+final_status+","+str(queue_time)+","+str(run_time)+"\n")
+                self.writeLog(log,job.job_id+","+name+","+final_status+","+str(queue_time)+","+str(run_time)+"\n")
             log.close()
 
 
