@@ -26,6 +26,13 @@ class Analysis:
     def analysis(self):
         pass
 
+    def writeLog(self,log,line):
+        try:
+            log.write(line)
+        except:
+            print "write error message"
+        
+
 class AnalysisList:
 
     def __init__(self):
@@ -72,7 +79,7 @@ class NodeAnalysis(Analysis):
             log.write("assignedM,assignedC,nodeM,nodeC,containerM,conatinerC\n")
             for time in time_list:
                 bundle=node[time]
-                log.write(str(time)+","+str(bundle[0])+","+str(bundle[1])+"," +str(bundle[2])+"," +str(bundle[3])+","
+                self.writeLog(log,str(time)+","+str(bundle[0])+","+str(bundle[1])+"," +str(bundle[2])+"," +str(bundle[3])+","
                          +str(bundle[4])+"," +str(bundle[5])+"\n")
             log.close()
 
@@ -93,7 +100,7 @@ class ClusterAnalysis(Analysis):
         log = open(self.path+"/cluster.csv","w")
         for time in time_list:
             bundle=self.cluster_infos[time]
-            log.write(str(time)+","+str(bundle[0])+","+str(bundle[1])+","+str(bundle[2])+"\n")
+            self.writeLog(log,str(time)+","+str(bundle[0])+","+str(bundle[1])+","+str(bundle[2])+"\n")
         log.close() 
          
         
@@ -128,7 +135,7 @@ class JobAnalysis(Analysis):
                 run_time   = (job.finish_time - job.run_time)/1000
                 final_status=job.finalStatus
                 name        =job.job_name
-                log.write(job.job_id+","+name+","+final_status+","+str(queue_time)+","+str(run_time)+"\n")
+                self,writeLog(log,job.job_id+","+name+","+final_status+","+str(queue_time)+","+str(run_time)+"\n")
             log.close()
 
 
@@ -152,12 +159,12 @@ class CapacityQueueAnalysis(Analysis):
                 if type(time_value) is dict:
                     key_list   = sorted(time_value.keys())
                     for time in key_list:
-                        log.write(str(time)+","+str(time_value[time])+"\n")
+                        self.writeLog(log,str(time)+","+str(time_value[time])+"\n")
                 elif type(time_value) is list:
                     for value in time_value:
-                        log.write(str(value)+"\n")
+                        self.writeLog(log,str(value)+"\n")
                 else:
-                    log.write(str(time_value)+"\n")
+                    self.writeLog(log,str(time_value)+"\n")
                 log.close()
 
 
