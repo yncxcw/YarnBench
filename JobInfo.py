@@ -39,6 +39,7 @@ class JobInfo:
             self.run_time = self.start_time + elapse_time 
         ##record state
         self.state = dict_read[STATE]
+        print self.state
         ##record progress with elapse time
         if self.statics.get(PROGRESS) is None:
             self.statics[PROGRESS] = {}
@@ -56,15 +57,10 @@ class JobInfo:
             self.statics[VCORE] = {}
         self.statics[VCORE][elapse_time]=int(dict_read[VCORE])
         ##record finish time
-        if dict_read[STATE] == "FINISHED" or dict_read[STATE] == "KILLED":
+        if self.state == "FINISHED" or self.state == "KILLED" or self.state == "FAILED":
+            print dict_read[STATE]
             self.finalStatus=dict_read[FINALSTATUS]
             self.finish = True
             self.finish_time=int(dict_read[FINISH])
-        else:
-            self.finalStatus="Unknow"
-            self.finish = True
-            self.finish_time=int(dict_read[FINISH])
-        pass
-	 
 
         
