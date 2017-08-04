@@ -36,7 +36,14 @@ class JobInfo:
 
         ##record run_time if applicable
         if (self.state == "ACCEPTED" or self.state =="SUBMITTED") and (dict_read[STATE]=="RUNNING"):
-            self.run_time = self.start_time + elapse_time 
+            self.run_time = self.start_time + elapse_time
+
+        elif self.state == "RUNNING" and dict_read[STATE] != "RUNNING"
+            self.finalStatus=dict_read[FINALSTATUS]
+            self.finish=True
+            self.finish_time=int(dict_read[FINISH])
+            print self.job_id+"  "+self.finalStatus+"  \n"
+ 
         ##record state
         self.state = dict_read[STATE]
         print self.state
@@ -56,11 +63,5 @@ class JobInfo:
         if self.statics.get(VCORE) is None:
             self.statics[VCORE] = {}
         self.statics[VCORE][elapse_time]=int(dict_read[VCORE])
-        ##record finish time
-        if self.state == "FINISHED" or self.state == "KILLED" or self.state == "FAILED":
-            print dict_read[STATE]
-            self.finalStatus=dict_read[FINALSTATUS]
-            self.finish = True
-            self.finish_time=int(dict_read[FINISH])
-
+        
         
