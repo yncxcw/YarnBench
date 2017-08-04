@@ -194,9 +194,13 @@ def read_json_url(url):
             response  = urllib2.urlopen(url)
             dict_read = json.loads(response.read())
         except Exception as exceptMessage:
-            print "read url error",exceptMessage
-        finally:
+            print "Exception read url error",exceptMessage
+
+        try:
             response.close()
+        except Exception as exceptMessage:
+            print "Exception close url error",exceptMessage
+
         return dict_read    
 
 
